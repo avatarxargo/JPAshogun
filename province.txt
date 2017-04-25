@@ -1,0 +1,16 @@
+Lhota 300 300
+Jarkov 200 450
+Osaka 10 100
+Edo 100 11
+Chosokabe 150 50
+Zapadakov -30 -30
+Honshu 500 -60
+#
+Lhota Jarkov
+Osaka Edo
+Osaka Lhota
+Lhota Chosokabe
+Chosokabe Osaka
+Edo Zapadakov
+Lhota Honshu
+Chosokabe Honshu
