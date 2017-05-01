@@ -24,8 +24,8 @@ public class MainManager {
     private static EntityManager em;
 
     public static void main(String[] args) {
-        //init();
-        //mw = new ManagerWindow();
+        init();
+        mw = new ManagerWindow();
         BaseDialog baseDialog = new BaseDialog(new ProvinceHandler());
     }
     
