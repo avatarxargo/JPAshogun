@@ -10,6 +10,8 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
+import manager.dialog.BaseDialog;
+import manager.dialog.ProvinceHandler;
 import manager.persistence.Province;
 import manager.persistence.ProvinceNeighbors;
 
@@ -22,8 +24,9 @@ public class MainManager {
     private static EntityManager em;
 
     public static void main(String[] args) {
-        init();
-        mw = new ManagerWindow();
+        //init();
+        //mw = new ManagerWindow();
+        BaseDialog baseDialog = new BaseDialog(new ProvinceHandler());
     }
     
     public static EntityManager getEM() {
