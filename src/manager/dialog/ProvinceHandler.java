@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 import javax.persistence.Query;
 import javax.swing.DefaultListModel;
+import manager.persistence.Province;
 import manager.window.MainManager;
 
 /**
@@ -52,6 +53,16 @@ public class ProvinceHandler implements TableHandler {
     @Override
     public String[] getColumnNames() {
         return new String[]{"id","name","pos_x","pos_y"};
+    }
+
+    @Override
+    public void removeById(Object key) {
+        Province prov = MainManager.getEM().find(Province.class, (long) key);
+        MainManager.getEM().getTransaction().begin();
+        MainManager.getEM().remove(prov);
+        MainManager.getEM().getTransaction().commit();
+        /*Query query = MainManager.getEM().createNativeQuery("DELETE FROM province WHERE province_id = ?1");
+        query.setParameter(1, key).executeUpdate();*/
     }
     
 }

@@ -69,11 +69,16 @@ public class BaseDialog extends JFrame {
 				new ActionListener()
 				{
 						public void actionPerformed(ActionEvent arg0) {
-                                                    int index = items.getSelectedIndex();
-                                                    System.out.println(index);
-                                                    listModel.remove(index);
+                                                    int index = table.getSelectedRow();
+                                                    Object key = table.getValueAt(index, 0);
+                                                    System.out.println(key);
+                                                    th.removeById(key);
                                                     remodel();
-                                                    items.setSelectedIndex(index);
+                                                    while(index>0) {
+                                                    if(index<table.getRowCount()) {
+                                                        table.setRowSelectionInterval(index, index);
+                                                        break;
+                                                    } else {index--;}}
 						}
 				}
 		);
@@ -98,6 +103,7 @@ public class BaseDialog extends JFrame {
         table.setColumnSelectionAllowed(false);
         table.setRowSelectionAllowed(true);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        table.getTableHeader().setReorderingAllowed(false);
         remodel();
         scroll = new JScrollPane(table);
         scroll.setPreferredSize(new Dimension(400,355));
