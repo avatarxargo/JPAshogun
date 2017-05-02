@@ -11,6 +11,8 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 import manager.dialog.BaseDialog;
+import manager.dialog.DBVariable.DBVarType;
+import manager.dialog.ModularHandler;
 import manager.dialog.ProvinceHandler;
 import manager.persistence.Province;
 import manager.persistence.ProvinceNeighbors;
@@ -26,7 +28,12 @@ public class MainManager {
     public static void main(String[] args) {
         init();
         mw = new ManagerWindow();
-        BaseDialog baseDialog = new BaseDialog(new ProvinceHandler());
+        ModularHandler mh = new ModularHandler("Province","province");
+        mh.addVariable("id", "province_id", DBVarType.LONG);
+        mh.addVariable("name", "province_name", DBVarType.VARCHAR);
+        mh.addVariable("x", "x", DBVarType.LONG);
+        mh.addVariable("y", "y", DBVarType.LONG);
+        BaseDialog baseDialog = new BaseDialog(mh);
     }
     
     public static EntityManager getEM() {
