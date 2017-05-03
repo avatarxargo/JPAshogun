@@ -14,8 +14,8 @@ import manager.dialog.BaseDialog;
 import manager.dialog.DBVariable.DBVarType;
 import manager.dialog.ModularHandler;
 import manager.dialog.ProvinceHandler;
-import manager.persistence.Province;
-import manager.persistence.ProvinceNeighbors;
+import manager.persistence.ProvinceLocal;
+import manager.persistence.ProvinceNeighborsLocal;
 
 public class MainManager {
     
@@ -85,7 +85,7 @@ public class MainManager {
     }
 
     public static void addProvince(float x, float y, String name) {
-        Province p = Province.createProvince(name, x, y);
+        ProvinceLocal p = ProvinceLocal.createProvince(name, x, y);
         tx.begin();
         em.persist(p);
         tx.commit();
@@ -95,9 +95,9 @@ public class MainManager {
         long ida = pullIdByProvinceName(a);
         long idb = pullIdByProvinceName(b);
         System.out.println(a+" "+ida+" -> "+b+" "+idb);
-        Province pa = em.find(Province.class, ida);
-        Province pb = em.find(Province.class, idb);
-        ProvinceNeighbors n = ProvinceNeighbors.createNeighbors(pa,pb);
+        ProvinceLocal pa = em.find(ProvinceLocal.class, ida);
+        ProvinceLocal pb = em.find(ProvinceLocal.class, idb);
+        ProvinceNeighborsLocal n = ProvinceNeighborsLocal.createNeighbors(pa,pb);
         tx.begin();
         em.persist(n);
         tx.commit();

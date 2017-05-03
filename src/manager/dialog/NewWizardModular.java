@@ -11,7 +11,7 @@ import javax.swing.JFrame;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
-import manager.persistence.Province;
+import manager.persistence.ProvinceLocal;
 import manager.window.MainManager;
 
 /**

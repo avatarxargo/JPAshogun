@@ -21,7 +21,7 @@ import javax.persistence.ManyToMany;
  * @author user
  */
 @Entity
-public class Province implements Serializable {
+public class ProvinceLocal implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -31,8 +31,8 @@ public class Province implements Serializable {
     private float x;
     private float y;
 
-    public static Province createProvince(String name, float x, float y) {
-        Province ret = new Province();
+    public static ProvinceLocal createProvince(String name, float x, float y) {
+        ProvinceLocal ret = new ProvinceLocal();
         ret.setProvince_name(name);
         ret.setX(x);
         ret.setY(y);
@@ -58,10 +58,10 @@ public class Province implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Province)) {
+        if (!(object instanceof ProvinceLocal)) {
             return false;
         }
-        Province other = (Province) object;
+        ProvinceLocal other = (ProvinceLocal) object;
         if ((this.province_id == null && other.province_id != null) || (this.province_id != null && !this.province_id.equals(other.province_id))) {
             return false;
         }

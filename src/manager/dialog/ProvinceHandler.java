@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 import javax.persistence.Query;
 import javax.swing.DefaultListModel;
-import manager.persistence.Province;
+import manager.persistence.ProvinceLocal;
 import manager.window.MainManager;
 
 /**
@@ -57,7 +57,7 @@ public class ProvinceHandler implements TableHandler {
 
     @Override
     public void removeById(Object key) {
-        Province prov = MainManager.getEM().find(Province.class, (long) key);
+        ProvinceLocal prov = MainManager.getEM().find(ProvinceLocal.class, (long) key);
         MainManager.getEM().getTransaction().begin();
         MainManager.getEM().remove(prov);
         MainManager.getEM().getTransaction().commit();

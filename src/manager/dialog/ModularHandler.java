@@ -6,7 +6,7 @@ import java.util.List;
 import javax.persistence.Query;
 import javax.swing.DefaultListModel;
 import manager.dialog.DBVariable.DBVarType;
-import manager.persistence.Province;
+import manager.persistence.ProvinceLocal;
 import manager.window.MainManager;
 
 /**
@@ -93,7 +93,7 @@ public class ModularHandler implements TableHandler {
 
     @Override
     public void removeById(Object key) {
-        Object obj = MainManager.getEM().find(Province.class, (long) key);
+        Object obj = MainManager.getEM().find(ProvinceLocal.class, (long) key);
         MainManager.getEM().getTransaction().begin();
         MainManager.getEM().remove(obj);
         MainManager.getEM().getTransaction().commit();
