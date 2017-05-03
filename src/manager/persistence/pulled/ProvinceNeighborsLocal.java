@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package manager.persistence;
+package manager.persistence.pulled;
 
 import java.io.Serializable;
 import javax.persistence.Entity;
@@ -14,17 +14,17 @@ import javax.persistence.OneToOne;
 
 
 @Entity
-public class ProvinceNeighbors implements Serializable {
+public class ProvinceNeighborsLocal implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     @OneToOne
-    private Province prov1;
+    private ProvinceLocal prov1;
     @OneToOne
-    private Province prov2;
+    private ProvinceLocal prov2;
     
-    public static ProvinceNeighbors createNeighbors(Province from, Province to) {
-        ProvinceNeighbors ret = new ProvinceNeighbors();
+    public static ProvinceNeighborsLocal createNeighbors(ProvinceLocal from, ProvinceLocal to) {
+        ProvinceNeighborsLocal ret = new ProvinceNeighborsLocal();
         ret.prov1 = from;
         ret.prov2 = to;
         return ret;
@@ -40,10 +40,10 @@ public class ProvinceNeighbors implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Province)) {
+        if (!(object instanceof ProvinceLocal)) {
             return false;
         }
-        ProvinceNeighbors other = (ProvinceNeighbors) object;
+        ProvinceNeighborsLocal other = (ProvinceNeighborsLocal) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -67,28 +67,28 @@ public class ProvinceNeighbors implements Serializable {
     /**
      * @return the prov1
      */
-    public Province getProv1() {
+    public ProvinceLocal getProv1() {
         return prov1;
     }
 
     /**
      * @param prov1 the prov1 to set
      */
-    public void setProv1(Province prov1) {
+    public void setProv1(ProvinceLocal prov1) {
         this.prov1 = prov1;
     }
 
     /**
      * @return the prov2
      */
-    public Province getProv2() {
+    public ProvinceLocal getProv2() {
         return prov2;
     }
 
     /**
      * @param prov2 the prov2 to set
      */
-    public void setProv2(Province prov2) {
+    public void setProv2(ProvinceLocal prov2) {
         this.prov2 = prov2;
     }
 }
