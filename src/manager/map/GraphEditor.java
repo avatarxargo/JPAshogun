@@ -110,9 +110,15 @@ public class GraphEditor extends PCanvas {
                 selected.setPaint(selectColor);
                 if (send) {
                     sendTo.mapData(selected.getName());
+                    System.out.println(getSelectedId());
                 }
             }
         });
+    }
+    
+    /**Returns the db table id of the selected province.*/
+    public long getSelectedId() {
+        return (long)selected.getAttribute(0);
     }
 
     public void passTarget(TransactionPopUp target) {
@@ -138,7 +144,7 @@ public class GraphEditor extends PCanvas {
                     mx = Integer.parseInt(split[1].trim());
                     my = Integer.parseInt(split[2].trim());
                     prov1 = split[0].trim();
-                    addProvince(mx, my, prov1);
+                    addProvince(mx, my, prov1, 0);
                 }
                 while (scan.hasNextLine()) {
                     line = scan.nextLine();
@@ -154,13 +160,13 @@ public class GraphEditor extends PCanvas {
     }
     
     public void pullProvinces(){
-        Query queryN = MainManager.getEM().createNativeQuery("SELECT province_name, x, y FROM province");
+        Query queryN = MainManager.getEM().createNativeQuery("SELECT province_name, x, y, province_id FROM province");
         List<Object[]> listN = queryN.getResultList();
         System.out.println("Pulling provinces:");
         for (Iterator<Object[]> itN = listN.iterator(); itN.hasNext();) {
             Object[] obj = itN.next();
             System.out.println(obj[0]+"["+obj[1]+","+obj[2]+"]");
-            addProvince((float)((double)obj[1]),(float)((double)obj[2]),(String)obj[0]);
+            addProvince((float)((double)obj[1]),(float)((double)obj[2]),(String)obj[0],(Long) obj[3]);
         }
         //their connections
         queryN = MainManager.getEM().createNativeQuery("SELECT p1.province_name, p2.province_name\n" +
@@ -175,10 +181,11 @@ public class GraphEditor extends PCanvas {
         }
     }
 
-    public void addProvince(float x, float y, String name) {
+    public void addProvince(float x, float y, String name, long tableid) {
         PPath node = PPath.createEllipse(x, y, 20, 20);
         node.addAttribute("edges", new ArrayList());
         node.setName(name);
+        node.addAttribute(0, tableid); //id in the database table.
         System.out.println(node.getName());
         nodeLayer.addChild(node);
         PText tag = new PText(name);

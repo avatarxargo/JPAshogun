@@ -64,5 +64,10 @@ public class ProvinceHandler implements TableHandler {
         /*Query query = MainManager.getEM().createNativeQuery("DELETE FROM province WHERE province_id = ?1");
         query.setParameter(1, key).executeUpdate();*/
     }
+
+    @Override
+    public void newWizard(BaseDialog bd, Object[] stval) {
+        newWizard(bd);
+    }
     
 }

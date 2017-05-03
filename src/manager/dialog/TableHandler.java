@@ -13,6 +13,8 @@ public interface TableHandler {
     public void reloadSelect(BaseDialog bd);
     /** Creates an insertion wizard for the new element. */
     public void newWizard(BaseDialog bd);
+    /** Creates an insertion wizard for the new element with starting values. */
+    public void newWizard(BaseDialog bd, Object[] stval);
     /** Returns the names for columns in this table*/
     public String[] getColumnNames();
     /**Removes the chosen id*/

@@ -1,5 +1,6 @@
 package manager.map;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 
 import manager.window.TransactionPopUp;
@@ -20,5 +21,9 @@ public class GraphEditorTester extends JFrame {
     
     public void passTarget(TransactionPopUp target) {
     	graphEditor.passTarget(target);
+    }
+    
+    public void createButtonWizard(JButton button) {
+        GraphEditorTester get = new GraphEditorTester();
     }
 }

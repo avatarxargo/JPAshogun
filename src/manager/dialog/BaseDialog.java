@@ -28,7 +28,7 @@ import manager.window.TransactionPopUp;
 public class BaseDialog extends JFrame {
     
     private JPanel content, contentR, contentL;
-    private JButton b_new, b_rem;
+    private JButton b_new, b_edit, b_rem;
     
     private DefaultListModel listModel;
     private JList items;
@@ -64,12 +64,32 @@ public class BaseDialog extends JFrame {
 		);
         //b_new.setPreferredSize(new Dimension(100,30));
         contentR.add(b_new);
+        //
+        b_edit = new JButton("Edit");
+        b_edit.addActionListener(
+				new ActionListener()
+				{
+						public void actionPerformed(ActionEvent arg0) {
+                                                    //select data from row    
+                                                    int index = table.getSelectedRow();
+                                                    if(index<0) {return;}
+                                                    Object[] rowval = new Object[table.getColumnCount()];
+                                                    for(int i=0;i<rowval.length;++i) {
+                                                        rowval[i] = table.getValueAt(index, i);
+                                                    }
+                                                    th.newWizard(me,rowval);
+						}
+				}
+		);
+        //
+        contentR.add(b_edit);
         b_rem = new JButton("Remove");
         b_rem.addActionListener(
 				new ActionListener()
 				{
 						public void actionPerformed(ActionEvent arg0) {
                                                     int index = table.getSelectedRow();
+                                                    if(index<0) {return;}
                                                     Object key = table.getValueAt(index, 0);
                                                     System.out.println(key);
                                                     th.removeById(key);
