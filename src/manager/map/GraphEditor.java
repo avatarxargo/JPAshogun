@@ -5,14 +5,19 @@ import java.awt.Dimension;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.persistence.Query;
 
 import javax.swing.ImageIcon;
@@ -27,12 +32,13 @@ import org.piccolo2d.nodes.PPath;
 import org.piccolo2d.nodes.PText;
 
 import manager.window.TransactionPopUp;
+import org.piccolo2d.nodes.PImage;
 
 public class GraphEditor extends PCanvas {
 
     PPath selected;
     Color selectColor = Color.GREEN;
-    PLayer nodeLayer, edgeLayer, nameLayer;
+    PLayer nodeLayer, edgeLayer, nameLayer, mapLayer;
 
     private boolean send;
     private TransactionPopUp sendTo;
@@ -45,12 +51,25 @@ public class GraphEditor extends PCanvas {
         // (always underneath the nodes)
         nodeLayer = getLayer();
         edgeLayer = new PLayer();
+        mapLayer = new PLayer();
+        
+        getRoot().addChild(mapLayer);
+        mapLayer.setOffset(-500,-500);
+        getCamera().addLayer(0, mapLayer);
+        BufferedImage img = null;
+        try {
+            img = ImageIO.read(this.getClass().getResource("/map.png"));
+        } catch (IOException ex) {
+            Logger.getLogger(GraphEditor.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        mapLayer.addChild(new PImage(img));
+        
         getRoot().addChild(edgeLayer);
-        getCamera().addLayer(0, edgeLayer);
+        getCamera().addLayer(1, edgeLayer);
 
         nameLayer = new PLayer();
         getRoot().addChild(nameLayer);
-        getCamera().addLayer(1, nameLayer);
+        getCamera().addLayer(2, nameLayer);
 
         //loadProvinces("province.txt");
         pullProvinces();
