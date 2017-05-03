@@ -74,9 +74,8 @@ public class ModularHandler implements TableHandler {
 
     @Override
     public void newWizard(BaseDialog bd) {
-        NewWizard.provinceWizard(bd);
-        //bd.getListModel().addElement("bananaNEW");
-        //bd.remodel();
+        NewWizardModular.generateWizard(bd, "new "+displayTableName, tableVar, tableName);
+        //NewWizard.provinceWizard(bd);
     }
 
     @Override

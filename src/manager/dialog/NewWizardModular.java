@@ -1,5 +1,6 @@
 package manager.dialog;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -21,6 +22,8 @@ public class NewWizardModular extends JFrame{
     
     private String tableName;
     private ArrayList<DBVariable> vars;
+    private ArrayList<VarField> field;
+    
         
     public NewWizardModular(String name, ArrayList<DBVariable> vars, String tableName) { 
         this.setSize(400, 200);
@@ -29,10 +32,41 @@ public class NewWizardModular extends JFrame{
         this.setTitle(name);
         this.tableName = tableName;
         this.vars = vars;
+        field = new ArrayList<VarField>();
+        
+        //content
+        setLayout(new BoxLayout(getContentPane(),BoxLayout.Y_AXIS));
+        for(int i=1;i<vars.size();++i) {
+            VarField vf = new VarField();
+            vf.var = vars.get(i);
+            switch(vf.var.type) {
+                case LONG:
+                    JSpinner spn = new JSpinner(new SpinnerNumberModel(0,-1000,1000,10));
+                    add(spn);
+                    vf.cmp = spn;
+                    break;
+                default:
+                    JTextField fld = new JTextField();
+                    add(fld);
+                    vf.cmp = fld;
+            }
+            field.add(vf);
+        }
+        setVisible(true);
     }
     
     private class VarField {
         public DBVariable var;
+        public Component cmp;
+        
+        public Object getValue() {
+            switch(var.type) {
+                case LONG:
+                    return ((JSpinner) cmp).getValue();
+                default:
+                    return ((JTextField) cmp).getText();
+            }
+        }
     }
     
     //http://www.codemiles.com/jpa/insert-using-native-query-t6205.html
@@ -45,17 +79,17 @@ public class NewWizardModular extends JFrame{
     private String getQuerryCall() {
         String out = "INSERT INTO "+tableName+" (";
         boolean comma = false;
-        for(DBVariable v: vars) {
+        for(int i=1;i<vars.size(); ++i) {
             if(comma) {
-                out+=","+v.idname;
+                out+=","+vars.get(i).idname;
             } else {
                 comma = true;
-                out+=v.idname;
+                out+=vars.get(i).idname;
             }
         }
         out+=") VALUES (";
         comma = false;
-        for(DBVariable v: vars) {
+        for(int i=1;i<vars.size(); ++i) {
             if(comma) {
                 out+=",?";
             } else {
@@ -65,6 +99,32 @@ public class NewWizardModular extends JFrame{
         }
         out+=")";
         return out;
+    }
+    
+    public static void generateWizard(BaseDialog bdm, String name, ArrayList<DBVariable> vars, String tableName) {
+        NewWizardModular nw = new NewWizardModular(name,vars,tableName);
+        nw.addOk(bdm);
+    }
+    
+    private void addOk(BaseDialog bd) {
+        JButton ok = new JButton("OK");
+        ok.addActionListener(
+            new ActionListener()
+            {
+                public void actionPerformed(ActionEvent arg0) {
+                    Query query = MainManager.getEM().createNativeQuery(getQuerryCall());
+                    System.out.println(getQuerryCall());
+                    for(int i=0;i<field.size();++i) {
+                        query.setParameter(i+1, field.get(i).getValue());
+                        System.out.println(i+" - "+field.get(i).getValue());
+                    }
+                    MainManager.getEM().getTransaction().begin();
+                    query.executeUpdate();
+                    MainManager.getEM().getTransaction().commit();
+                }
+            }
+            );
+        add(ok);
     }
     
     /*public static void provinceWizard(BaseDialog bd) {
