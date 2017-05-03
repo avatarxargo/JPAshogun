@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 import javax.persistence.Query;
 import javax.swing.DefaultListModel;
-import manager.persistence.ProvinceLocal;
+import manager.persistence.pulled.ProvinceLocal;
 import manager.window.MainManager;
 
 /**

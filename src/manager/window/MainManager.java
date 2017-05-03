@@ -14,8 +14,8 @@ import manager.dialog.BaseDialog;
 import manager.dialog.DBVariable.DBVarType;
 import manager.dialog.ModularHandler;
 import manager.dialog.ProvinceHandler;
-import manager.persistence.ProvinceLocal;
-import manager.persistence.ProvinceNeighborsLocal;
+import manager.persistence.pulled.ProvinceLocal;
+import manager.persistence.pulled.ProvinceNeighborsLocal;
 
 public class MainManager {
     
