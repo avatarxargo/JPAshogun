@@ -56,11 +56,12 @@ public class ProvinceHandler implements TableHandler {
     }
 
     @Override
-    public void removeById(Object key) {
+    public void removeById(Object key, Object[] row) {
         ProvinceLocal prov = MainManager.getEM().find(ProvinceLocal.class, (long) key);
         MainManager.getEM().getTransaction().begin();
         MainManager.getEM().remove(prov);
         MainManager.getEM().getTransaction().commit();
+        
         /*Query query = MainManager.getEM().createNativeQuery("DELETE FROM province WHERE province_id = ?1");
         query.setParameter(1, key).executeUpdate();*/
     }

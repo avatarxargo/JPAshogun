@@ -48,14 +48,11 @@ public class Building implements Serializable {
     @Basic(optional = false)
     @Column(name = "cost")
     private int cost;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "buildingIdBuilding")
-    private Collection<TransactionBuild> transactionBuildCollection;
-    @JoinColumn(name = "province_id_province", referencedColumnName = "id_province")
-    @ManyToOne(optional = false)
-    private Province provinceIdProvince;
     @JoinColumn(name = "resource_id_resurce", referencedColumnName = "id_resurce")
     @ManyToOne(optional = false)
     private Resource resourceIdResurce;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "buildingIdBuilding")
+    private Collection<TransactionBuild> transactionBuildCollection;
 
     public Building() {
     }
@@ -94,6 +91,14 @@ public class Building implements Serializable {
         this.cost = cost;
     }
 
+    public Resource getResourceIdResurce() {
+        return resourceIdResurce;
+    }
+
+    public void setResourceIdResurce(Resource resourceIdResurce) {
+        this.resourceIdResurce = resourceIdResurce;
+    }
+
     @XmlTransient
     public Collection<TransactionBuild> getTransactionBuildCollection() {
         return transactionBuildCollection;
@@ -101,22 +106,6 @@ public class Building implements Serializable {
 
     public void setTransactionBuildCollection(Collection<TransactionBuild> transactionBuildCollection) {
         this.transactionBuildCollection = transactionBuildCollection;
-    }
-
-    public Province getProvinceIdProvince() {
-        return provinceIdProvince;
-    }
-
-    public void setProvinceIdProvince(Province provinceIdProvince) {
-        this.provinceIdProvince = provinceIdProvince;
-    }
-
-    public Resource getResourceIdResurce() {
-        return resourceIdResurce;
-    }
-
-    public void setResourceIdResurce(Resource resourceIdResurce) {
-        this.resourceIdResurce = resourceIdResurce;
     }
 
     @Override

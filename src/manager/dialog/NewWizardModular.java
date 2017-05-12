@@ -7,10 +7,12 @@ import java.util.ArrayList;
 import javax.persistence.Query;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
+import manager.dialog.popups.JProvinceButton;
 import manager.persistence.pulled.ProvinceLocal;
 import manager.window.MainManager;
 
@@ -24,19 +26,22 @@ public class NewWizardModular extends JFrame {
     private String tableName;
     private ArrayList<DBVariable> vars;
     private ArrayList<VarField> field;
+    private boolean firstid;
 
-    public NewWizardModular(String name, ArrayList<DBVariable> vars, String tableName) {
+    public NewWizardModular(String name, ArrayList<DBVariable> vars, String tableName, boolean firstid) {
         this.setSize(400, 200);
         this.setDefaultCloseOperation(HIDE_ON_CLOSE);
         this.setLocation(200, 200);
         this.setTitle(name);
         this.tableName = tableName;
         this.vars = vars;
+        this.firstid = firstid;
         field = new ArrayList<VarField>();
 
         //content
         setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
-        for (int i = 1; i < vars.size(); ++i) {
+        int i = firstid ? 1 : 0;
+        for (; i < vars.size(); ++i) {
             VarField vf = new VarField();
             vf.var = vars.get(i);
             switch (vf.var.type) {
@@ -46,16 +51,14 @@ public class NewWizardModular extends JFrame {
                     vf.cmp = spn;
                     break;
                 case PROVINCE_FK:
-                    JButton btn = new JButton("< Select Province >");
-                    btn.addActionListener(
-                            new ActionListener() {
-                                public void actionPerformed(ActionEvent arg0) {
-                                    System.out.println("Selecting province");
-                                }
-                            }
-                    );
+                    JProvinceButton btn = new JProvinceButton();
                     add(btn);
                     vf.cmp = btn;
+                    break;
+                case CLAN_FK:
+                    JComboBox jcb = MainManager.mhclan.getComboBox();
+                    add(jcb);
+                    vf.cmp = jcb;
                     break;
                 default:
                     JTextField fld = new JTextField();
@@ -76,8 +79,14 @@ public class NewWizardModular extends JFrame {
             switch (var.type) {
                 case LONG:
                     ((JSpinner) cmp).setValue(val);
+                    break;
+                case PROVINCE_FK:
+                    break;
+                case CLAN_FK:
+                    break;
                 default:
                     ((JTextField) cmp).setText((String) val);
+                    break;
             }
         }
 
@@ -85,10 +94,20 @@ public class NewWizardModular extends JFrame {
             switch (var.type) {
                 case LONG:
                     return ((JSpinner) cmp).getValue();
+                case PROVINCE_FK:
+                    return ((JProvinceButton) cmp).getFK();
+                case CLAN_FK:
+                    return parseKey(((JComboBox) cmp));
                 default:
                     return ((JTextField) cmp).getText();
             }
         }
+    }
+    
+    private int parseKey(JComboBox cbx) {
+        String s = (String)cbx.getSelectedItem();
+        s = s.substring(s.indexOf("[")+1, s.indexOf("]"));
+        return Integer.valueOf(s);
     }
 
     //http://www.codemiles.com/jpa/insert-using-native-query-t6205.html
@@ -102,7 +121,8 @@ public class NewWizardModular extends JFrame {
     private String getQuerryCall() {
         String out = "INSERT INTO " + tableName + " (";
         boolean comma = false;
-        for (int i = 1; i < vars.size(); ++i) {
+        int i = firstid ? 1 : 0;
+        for (; i < vars.size(); ++i) {
             if (comma) {
                 out += "," + vars.get(i).idname;
             } else {
@@ -112,7 +132,7 @@ public class NewWizardModular extends JFrame {
         }
         out += ") VALUES (";
         comma = false;
-        for (int i = 1; i < vars.size(); ++i) {
+        for (i = firstid ? 1 : 0; i < vars.size(); ++i) {
             if (comma) {
                 out += ",?";
             } else {
@@ -124,13 +144,13 @@ public class NewWizardModular extends JFrame {
         return out;
     }
 
-    public static void generateWizard(BaseDialog bdm, String name, ArrayList<DBVariable> vars, String tableName) {
-        NewWizardModular nw = new NewWizardModular(name, vars, tableName);
+    public static void generateWizard(BaseDialog bdm, String name, ArrayList<DBVariable> vars, String tableName, boolean firstid) {
+        NewWizardModular nw = new NewWizardModular(name, vars, tableName, firstid);
         nw.addOk(bdm);
     }
 
-    public static void generateWizard(BaseDialog bdm, Object[] stval, String name, ArrayList<DBVariable> vars, String tableName) {
-        NewWizardModular nw = new NewWizardModular(name, vars, tableName);
+    public static void generateWizard(BaseDialog bdm, Object[] stval, String name, ArrayList<DBVariable> vars, String tableName, boolean firstid) {
+        NewWizardModular nw = new NewWizardModular(name, vars, tableName, firstid);
         for (int i = 0; i < stval.length; ++i) {
             nw.setVarVal(i, stval[i]);
         }
@@ -155,6 +175,7 @@ public class NewWizardModular extends JFrame {
                         MainManager.getEM().getTransaction().begin();
                         query.executeUpdate();
                         MainManager.getEM().getTransaction().commit();
+                        bd.remodel();
                     }
                 }
         );

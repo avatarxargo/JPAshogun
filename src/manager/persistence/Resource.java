@@ -43,11 +43,11 @@ public class Resource implements Serializable {
     @Column(name = "resource_name")
     private String resourceName;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "resourceIdResurce")
-    private Collection<TransactionTrain> transactionTrainCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "resourceIdResurce")
     private Collection<Resources> resourcesCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "resourceIdResurce")
     private Collection<Building> buildingCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "resourceIdResurce")
+    private Collection<TransactionTrain> transactionTrainCollection;
 
     public Resource() {
     }
@@ -78,15 +78,6 @@ public class Resource implements Serializable {
     }
 
     @XmlTransient
-    public Collection<TransactionTrain> getTransactionTrainCollection() {
-        return transactionTrainCollection;
-    }
-
-    public void setTransactionTrainCollection(Collection<TransactionTrain> transactionTrainCollection) {
-        this.transactionTrainCollection = transactionTrainCollection;
-    }
-
-    @XmlTransient
     public Collection<Resources> getResourcesCollection() {
         return resourcesCollection;
     }
@@ -102,6 +93,15 @@ public class Resource implements Serializable {
 
     public void setBuildingCollection(Collection<Building> buildingCollection) {
         this.buildingCollection = buildingCollection;
+    }
+
+    @XmlTransient
+    public Collection<TransactionTrain> getTransactionTrainCollection() {
+        return transactionTrainCollection;
+    }
+
+    public void setTransactionTrainCollection(Collection<TransactionTrain> transactionTrainCollection) {
+        this.transactionTrainCollection = transactionTrainCollection;
     }
 
     @Override

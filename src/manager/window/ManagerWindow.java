@@ -87,9 +87,9 @@ public class ManagerWindow extends JFrame {
 		//------------------
 		buttons = new JPanel();
 		buttons.setLayout(new BoxLayout(buttons,BoxLayout.X_AXIS));
-		buttons.add(b_nextDay);
+		//buttons.add(b_nextDay);
 		buttons.add(b_addCommand);
-		buttons.add(b_removeCommand);
+		//buttons.add(b_removeCommand);
 		buttons.add(b_showMap);
 		
 		content = new JPanel();
@@ -102,6 +102,11 @@ public class ManagerWindow extends JFrame {
 		content.setVisible(true);
 		this.setVisible(true);
 	}
+        
+        public void addButton(JButton button) {
+            buttons.add(button);
+            this.setVisible(true);
+        }
 	
 
 	public void showMap() {

@@ -18,5 +18,5 @@ public interface TableHandler {
     /** Returns the names for columns in this table*/
     public String[] getColumnNames();
     /**Removes the chosen id*/
-    public void removeById(Object key);
+    public void removeById(Object key, Object[] row);
 }

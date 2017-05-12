@@ -48,14 +48,14 @@ public class TransactionTrain implements Serializable {
     @Basic(optional = false)
     @Column(name = "resources_amount")
     private int resourcesAmount;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "transactionTrainIdTransactionTrain")
+    private Collection<Transactions> transactionsCollection;
     @JoinColumn(name = "province_id_province", referencedColumnName = "id_province")
     @ManyToOne(optional = false)
     private Province provinceIdProvince;
     @JoinColumn(name = "resource_id_resurce", referencedColumnName = "id_resurce")
     @ManyToOne(optional = false)
     private Resource resourceIdResurce;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "transactionTrainIdTransactionTrain")
-    private Collection<Transactions> transactionsCollection;
 
     public TransactionTrain() {
     }
@@ -94,6 +94,15 @@ public class TransactionTrain implements Serializable {
         this.resourcesAmount = resourcesAmount;
     }
 
+    @XmlTransient
+    public Collection<Transactions> getTransactionsCollection() {
+        return transactionsCollection;
+    }
+
+    public void setTransactionsCollection(Collection<Transactions> transactionsCollection) {
+        this.transactionsCollection = transactionsCollection;
+    }
+
     public Province getProvinceIdProvince() {
         return provinceIdProvince;
     }
@@ -108,15 +117,6 @@ public class TransactionTrain implements Serializable {
 
     public void setResourceIdResurce(Resource resourceIdResurce) {
         this.resourceIdResurce = resourceIdResurce;
-    }
-
-    @XmlTransient
-    public Collection<Transactions> getTransactionsCollection() {
-        return transactionsCollection;
-    }
-
-    public void setTransactionsCollection(Collection<Transactions> transactionsCollection) {
-        this.transactionsCollection = transactionsCollection;
     }
 
     @Override

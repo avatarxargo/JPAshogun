@@ -42,14 +42,12 @@ public class Clan implements Serializable {
     @Basic(optional = false)
     @Column(name = "nameclan")
     private String nameclan;
-    @OneToMany(mappedBy = "clanIdClan")
-    private Collection<Province> provinceCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "clanIdClan")
     private Collection<Resources> resourcesCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "clanIdClan")
     private Collection<Transactions> transactionsCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "clanIdClan")
-    private Collection<Simday> simdayCollection;
+    @OneToMany(mappedBy = "clanIdClan")
+    private Collection<Province> provinceCollection;
     @OneToMany(mappedBy = "clanIdClan")
     private Collection<Player> playerCollection;
 
@@ -82,15 +80,6 @@ public class Clan implements Serializable {
     }
 
     @XmlTransient
-    public Collection<Province> getProvinceCollection() {
-        return provinceCollection;
-    }
-
-    public void setProvinceCollection(Collection<Province> provinceCollection) {
-        this.provinceCollection = provinceCollection;
-    }
-
-    @XmlTransient
     public Collection<Resources> getResourcesCollection() {
         return resourcesCollection;
     }
@@ -109,12 +98,12 @@ public class Clan implements Serializable {
     }
 
     @XmlTransient
-    public Collection<Simday> getSimdayCollection() {
-        return simdayCollection;
+    public Collection<Province> getProvinceCollection() {
+        return provinceCollection;
     }
 
-    public void setSimdayCollection(Collection<Simday> simdayCollection) {
-        this.simdayCollection = simdayCollection;
+    public void setProvinceCollection(Collection<Province> provinceCollection) {
+        this.provinceCollection = provinceCollection;
     }
 
     @XmlTransient

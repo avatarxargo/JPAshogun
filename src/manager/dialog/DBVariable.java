@@ -12,6 +12,6 @@ public class DBVariable {
     }
 
     public enum DBVarType {
-        VARCHAR, LONG, PROVINCE_FK;
+        VARCHAR, LONG, PROVINCE_FK, CLAN_FK;
     }
 }

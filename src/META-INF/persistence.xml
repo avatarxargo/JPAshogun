@@ -2,18 +2,21 @@
 <persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
   <persistence-unit name="JPAshogunPU" transaction-type="RESOURCE_LOCAL">
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-    <class>manager.persistence.Transactions</class>
-    <class>manager.persistence.Simday</class>
-    <class>manager.persistence.Resource</class>
     <class>manager.persistence.Building</class>
+    <class>manager.persistence.Clan</class>
+    <class>manager.persistence.Neighbour</class>
+    <class>manager.persistence.Player</class>
     <class>manager.persistence.PlayerType</class>
     <class>manager.persistence.Province</class>
-    <class>manager.persistence.Player</class>
+    <class>manager.persistence.Resource</class>
+    <class>manager.persistence.Resources</class>
+    <class>manager.persistence.Simday</class>
+    <class>manager.persistence.TransactionBuild</class>
     <class>manager.persistence.TransactionMove</class>
     <class>manager.persistence.TransactionTrain</class>
-    <class>manager.persistence.Clan</class>
-    <class>manager.persistence.TransactionBuild</class>
-    <class>manager.persistence.Resources</class>
+    <class>manager.persistence.Transactions</class>
+    <class>manager.persistence.pulled.ProvinceLocal</class>
+    <class>manager.persistence.pulled.ProvinceNeighborsLocal</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://slon.felk.cvut.cz:5432/student_db17_40"/>
       <property name="javax.persistence.jdbc.user" value="student_db17_40"/>

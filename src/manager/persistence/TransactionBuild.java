@@ -44,14 +44,14 @@ public class TransactionBuild implements Serializable {
     @Basic(optional = false)
     @Column(name = "count")
     private int count;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "transactionBuildIdTransactionBuild")
+    private Collection<Transactions> transactionsCollection;
     @JoinColumn(name = "building_id_building", referencedColumnName = "id_building")
     @ManyToOne(optional = false)
     private Building buildingIdBuilding;
     @JoinColumn(name = "province_id_province", referencedColumnName = "id_province")
     @ManyToOne(optional = false)
     private Province provinceIdProvince;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "transactionBuildIdTransactionBuild")
-    private Collection<Transactions> transactionsCollection;
 
     public TransactionBuild() {
     }
@@ -81,6 +81,15 @@ public class TransactionBuild implements Serializable {
         this.count = count;
     }
 
+    @XmlTransient
+    public Collection<Transactions> getTransactionsCollection() {
+        return transactionsCollection;
+    }
+
+    public void setTransactionsCollection(Collection<Transactions> transactionsCollection) {
+        this.transactionsCollection = transactionsCollection;
+    }
+
     public Building getBuildingIdBuilding() {
         return buildingIdBuilding;
     }
@@ -95,15 +104,6 @@ public class TransactionBuild implements Serializable {
 
     public void setProvinceIdProvince(Province provinceIdProvince) {
         this.provinceIdProvince = provinceIdProvince;
-    }
-
-    @XmlTransient
-    public Collection<Transactions> getTransactionsCollection() {
-        return transactionsCollection;
-    }
-
-    public void setTransactionsCollection(Collection<Transactions> transactionsCollection) {
-        this.transactionsCollection = transactionsCollection;
     }
 
     @Override

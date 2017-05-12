@@ -15,8 +15,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -37,7 +35,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Province.findByIdProvince", query = "SELECT p FROM Province p WHERE p.idProvince = :idProvince"),
     @NamedQuery(name = "Province.findByArmyUnits", query = "SELECT p FROM Province p WHERE p.armyUnits = :armyUnits"),
     @NamedQuery(name = "Province.findByX", query = "SELECT p FROM Province p WHERE p.x = :x"),
-    @NamedQuery(name = "Province.findByY", query = "SELECT p FROM Province p WHERE p.y = :y")})
+    @NamedQuery(name = "Province.findByY", query = "SELECT p FROM Province p WHERE p.y = :y"),
+    @NamedQuery(name = "Province.findByProvinceName", query = "SELECT p FROM Province p WHERE p.provinceName = :provinceName")})
 public class Province implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -54,26 +53,18 @@ public class Province implements Serializable {
     @Basic(optional = false)
     @Column(name = "y")
     private int y;
-    @JoinTable(name = "neighbour", joinColumns = {
-        @JoinColumn(name = "province_id_province", referencedColumnName = "id_province")}, inverseJoinColumns = {
-        @JoinColumn(name = "province_id_province", referencedColumnName = "id_province")})
-    @ManyToMany
-    private Collection<Province> provinceCollection;
-    @ManyToMany(mappedBy = "provinceCollection")
-    private Collection<Province> provinceCollection1;
+    @Basic(optional = false)
+    @Column(name = "province_name")
+    private String provinceName;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "provinceIdProvince")
+    private Collection<TransactionMove> transactionMoveCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "provinceIdProvince")
     private Collection<TransactionTrain> transactionTrainCollection;
     @JoinColumn(name = "clan_id_clan", referencedColumnName = "id_clan")
     @ManyToOne
     private Clan clanIdClan;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "provinceIdProvince")
-    private Collection<TransactionMove> transactionMoveCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "provinceIdProvince")
     private Collection<TransactionBuild> transactionBuildCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "provinceIdProvince")
-    private Collection<Simday> simdayCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "provinceIdProvince")
-    private Collection<Building> buildingCollection;
 
     public Province() {
     }
@@ -82,11 +73,12 @@ public class Province implements Serializable {
         this.idProvince = idProvince;
     }
 
-    public Province(Integer idProvince, int armyUnits, int x, int y) {
+    public Province(Integer idProvince, int armyUnits, int x, int y, String provinceName) {
         this.idProvince = idProvince;
         this.armyUnits = armyUnits;
         this.x = x;
         this.y = y;
+        this.provinceName = provinceName;
     }
 
     public Integer getIdProvince() {
@@ -121,22 +113,21 @@ public class Province implements Serializable {
         this.y = y;
     }
 
+    public String getProvinceName() {
+        return provinceName;
+    }
+
+    public void setProvinceName(String provinceName) {
+        this.provinceName = provinceName;
+    }
+
     @XmlTransient
-    public Collection<Province> getProvinceCollection() {
-        return provinceCollection;
+    public Collection<TransactionMove> getTransactionMoveCollection() {
+        return transactionMoveCollection;
     }
 
-    public void setProvinceCollection(Collection<Province> provinceCollection) {
-        this.provinceCollection = provinceCollection;
-    }
-
-    @XmlTransient
-    public Collection<Province> getProvinceCollection1() {
-        return provinceCollection1;
-    }
-
-    public void setProvinceCollection1(Collection<Province> provinceCollection1) {
-        this.provinceCollection1 = provinceCollection1;
+    public void setTransactionMoveCollection(Collection<TransactionMove> transactionMoveCollection) {
+        this.transactionMoveCollection = transactionMoveCollection;
     }
 
     @XmlTransient
@@ -157,39 +148,12 @@ public class Province implements Serializable {
     }
 
     @XmlTransient
-    public Collection<TransactionMove> getTransactionMoveCollection() {
-        return transactionMoveCollection;
-    }
-
-    public void setTransactionMoveCollection(Collection<TransactionMove> transactionMoveCollection) {
-        this.transactionMoveCollection = transactionMoveCollection;
-    }
-
-    @XmlTransient
     public Collection<TransactionBuild> getTransactionBuildCollection() {
         return transactionBuildCollection;
     }
 
     public void setTransactionBuildCollection(Collection<TransactionBuild> transactionBuildCollection) {
         this.transactionBuildCollection = transactionBuildCollection;
-    }
-
-    @XmlTransient
-    public Collection<Simday> getSimdayCollection() {
-        return simdayCollection;
-    }
-
-    public void setSimdayCollection(Collection<Simday> simdayCollection) {
-        this.simdayCollection = simdayCollection;
-    }
-
-    @XmlTransient
-    public Collection<Building> getBuildingCollection() {
-        return buildingCollection;
-    }
-
-    public void setBuildingCollection(Collection<Building> buildingCollection) {
-        this.buildingCollection = buildingCollection;
     }
 
     @Override

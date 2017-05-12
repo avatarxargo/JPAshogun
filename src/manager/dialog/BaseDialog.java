@@ -28,7 +28,7 @@ import manager.window.TransactionPopUp;
 public class BaseDialog extends JFrame {
     
     private JPanel content, contentR, contentL;
-    private JButton b_new, b_edit, b_rem;
+    private JButton b_new, b_edit, b_refresh, b_rem;
     
     private DefaultListModel listModel;
     private JList items;
@@ -45,7 +45,7 @@ public class BaseDialog extends JFrame {
         this.me = this;
         this.setTitle(th.getDisplayName());
         this.setSize(600, 400);
-        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        this.setDefaultCloseOperation(HIDE_ON_CLOSE);
 	this.setLocation(200, 200);
         content = new JPanel();
         contentL = new JPanel();
@@ -82,6 +82,17 @@ public class BaseDialog extends JFrame {
 				}
 		);
         //
+        b_refresh = new JButton("Refresh");
+        b_refresh.addActionListener(
+				new ActionListener()
+				{
+						public void actionPerformed(ActionEvent arg0) {
+                                                    me.remodel();
+						}
+				}
+		);
+        contentR.add(b_refresh);
+        //
         contentR.add(b_edit);
         b_rem = new JButton("Remove");
         b_rem.addActionListener(
@@ -91,8 +102,12 @@ public class BaseDialog extends JFrame {
                                                     int index = table.getSelectedRow();
                                                     if(index<0) {return;}
                                                     Object key = table.getValueAt(index, 0);
+                                                    Object[] row = new Object[table.getColumnCount()];
+                                                    for(int i=0; i<row.length;++i) {
+                                                        row[i] = table.getValueAt(index, i);
+                                                    }
                                                     System.out.println(key);
-                                                    th.removeById(key);
+                                                    th.removeById(key,row);
                                                     remodel();
                                                     while(index>0) {
                                                     if(index<table.getRowCount()) {
@@ -102,9 +117,8 @@ public class BaseDialog extends JFrame {
 						}
 				}
 		);
-        //b_rem.setPreferredSize(new Dimension(100,30));
-        contentR.add(b_rem);
         //
+        contentR.add(b_rem);
         /*
         String categories[] = { "Household - querry from memory - a very important thing", "Office", "Extended Family",
         "Company (US)", "Company (World)", "Team", "Will",
@@ -132,7 +146,7 @@ public class BaseDialog extends JFrame {
         content.add(contentL,BorderLayout.WEST);
         content.add(contentR,BorderLayout.EAST);
         this.add(content);
-        this.setVisible(true);
+        this.setVisible(false);
     }
     
     public DefaultListModel getListModel() {
