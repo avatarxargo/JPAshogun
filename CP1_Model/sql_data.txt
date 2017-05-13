@@ -31,17 +31,8 @@ VALUES
   ('metal'),
   ('kamen');
   
-INSERT INTO resource
-  (name_resource)
-VALUES
-  ('cest'),
-  ('penize'),
-  ('drevo'),
-  ('metal'),
-  ('kamen');
-  
 INSERT INTO owned_resource
-  (resource_id, amount, clan_id)
+  (resource_id, amount_resources, clan_id)
 VALUES
   (1,0,1),
   (2,0,1),
@@ -74,15 +65,15 @@ VALUES
   ('pekarna', 5, 4);
   
 INSERT INTO province
-  (name_province, x, y)
+  (name_province, x, y, cost_one_army_unit_resource_id)
 VALUES
-  ('Lhota', 300, 300),
-  ('Jarkov', 200, 450),
-  ('Osaka', 10, 100),
-  ('Edo', 100, 11),
-  ('Chosokabe', 150, 50),
-  ('Zapadakov', -30, -30),
-  ('Honshu', 500, -60);
+  ('Lhota', 300, 300, 2),
+  ('Jarkov', 200, 450, 2),
+  ('Osaka', 10, 100, 2),
+  ('Edo', 100, 11, 2),
+  ('Chosokabe', 150, 50, 2),
+  ('Zapadakov', -30, -30, 2),
+  ('Honshu', 500, -60, 2);
   
 INSERT INTO owned_buildings
   (province_id, building_id)

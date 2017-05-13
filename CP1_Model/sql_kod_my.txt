@@ -73,7 +73,7 @@ CREATE TABLE province (
 	clan_control_id integer DEFAULT NULL,
 	army_units integer NOT NULL DEFAULT 0,
 	cost_one_army_unit_value integer NOT NULL DEFAULT 1,
-	cost_one_army_unit_resource_id integer NOT NULL 2,
+	cost_one_army_unit_resource_id integer NOT NULL,
 	PRIMARY KEY (id_province),
 	CONSTRAINT unique_name_province UNIQUE (name_province),
     CONSTRAINT "clan_control_id_FK" FOREIGN KEY (clan_control_id)
