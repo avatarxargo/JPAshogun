@@ -1,0 +1,142 @@
+INSERT INTO player_type
+  (type_name)
+VALUES
+  ('vladce'),
+  ('archytekt'),
+  ('general');
+  
+INSERT INTO clan
+  (name_clan)
+VALUES
+  ('Asukabe'),
+  ('Hata'),
+  ('Ochi'),
+  ('Sakanoue'),
+  ('Toyotomi');
+  
+INSERT INTO player
+  (name, login, password, player_type_id, clan_id)
+VALUES
+  ('Honza', 'hon', 'IamH', 1, 1 ),
+  ('Petr', 'petr', 'password', 1, 2),
+  ('Marta', 'march', 'heslo', 1, 3),
+  ('Petra', 'girl', 'ahoj', 1, 4);
+  
+INSERT INTO resource
+  (name_resource)
+VALUES
+  ('cest'),
+  ('penize'),
+  ('drevo'),
+  ('metal'),
+  ('kamen');
+  
+INSERT INTO resource
+  (name_resource)
+VALUES
+  ('cest'),
+  ('penize'),
+  ('drevo'),
+  ('metal'),
+  ('kamen');
+  
+INSERT INTO owned_resource
+  (resource_id, amount, clan_id)
+VALUES
+  (1,0,1),
+  (2,0,1),
+  (3,0,1),
+  (4,0,1),
+  (5,0,1),
+  (1,0,2),
+  (2,0,2),
+  (3,0,2),
+  (4,0,2),
+  (5,0,2),
+  (1,0,3),
+  (2,0,3),
+  (3,0,3),
+  (4,0,3),
+  (5,0,3),
+  (1,0,4),
+  (2,0,4),
+  (3,0,4),
+  (4,0,4),
+  (5,0,4);
+  
+INSERT INTO building
+  (name_building, cost_value, cost_resource_id)
+VALUES
+  ('pole', 10, 2),
+  ('opevneni', 5, 3),
+  ('dojo', 3, 5),
+  ('svatyne', 3, 3),
+  ('pekarna', 5, 4);
+  
+INSERT INTO province
+  (name_province, x, y)
+VALUES
+  ('Lhota', 300, 300),
+  ('Jarkov', 200, 450),
+  ('Osaka', 10, 100),
+  ('Edo', 100, 11),
+  ('Chosokabe', 150, 50),
+  ('Zapadakov', -30, -30),
+  ('Honshu', 500, -60);
+  
+INSERT INTO owned_buildings
+  (province_id, building_id)
+VALUES
+  (1,4),
+  (1,3),
+  (1,2);
+  
+INSERT INTO neighbour
+  (first_province_id, second_province_id)
+VALUES
+  (1,2),
+  (3,4),
+  (3,2),
+  (1,5),
+  (5,3),
+  (4,6),
+  (1,7),
+  (5,7);
+
+INSERT INTO simday
+  (day_number, clan_id, province_id)
+VALUES
+   (1,1,NULL),
+   (1,2,NULL),
+   (1,3,NULL),
+   (1,4,NULL),
+   (1,5,NULL),
+   (2,1,NULL),
+   (2,2,1),
+   (2,2,2),
+   (2,3,NULL),
+   (2,4,NULL),
+   (2,5,NULL);
+   
+INSERT INTO transaction_move
+  (province_from_id, province_to_id, army_units)
+VALUES
+  (1,2,1);
+
+INSERT INTO transaction_train
+  (province_id, count_army)
+VALUES
+  (2,5);
+ 
+INSERT INTO transaction_build
+  (province_id, building_type_id)
+VALUES
+  (2,2);
+  
+INSERT INTO transactions
+  (simday_number, clan_id, transaction_move_id, transaction_train_id, transaction_build_id)
+VALUES
+  (2,2,NULL,1,NULL),
+  (2,2,1,NULL,NULL),
+  (2,2,NULL,NULL,1);
+  

@@ -1,0 +1,16 @@
+DROP TABLE 
+	transactions,
+	transaction_build,
+	transaction_move,
+	transaction_train,
+	simday,
+	neighbour,
+	owned_buildings,
+	province,
+	building,
+	owned_resource,
+	resource,
+	player,
+	clan,
+	player_type
+	;
