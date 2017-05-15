@@ -40,16 +40,16 @@ public class MainManager {
         
         mhprovince = new ModularHandler("Province","province",true,Province.class);
         mhprovince.addVariable("id", "id_province", DBVarType.LONG);
-        mhprovince.addVariable("name", "province_name", DBVarType.VARCHAR);
+        mhprovince.addVariable("name", "name_province", DBVarType.VARCHAR);
         mhprovince.addVariable("garrison", "army_units", DBVarType.LONG);
-        mhprovince.addVariable("clan", "clan_id_clan", DBVarType.CLAN_FK);
+        mhprovince.addVariable("clan", "clan_control_id", DBVarType.CLAN_FK);
         mhprovince.addVariable("x", "x", DBVarType.LONG);
         mhprovince.addVariable("y", "y", DBVarType.LONG);
         BaseDialog baseDialog = new BaseDialog(mhprovince);
         
         mhnrighbor = new ModularHandler("Neighbour","neighbour",false,null);
-        mhnrighbor.addVariable("id1", "province_id_province1", DBVarType.PROVINCE_FK);
-        mhnrighbor.addVariable("id2", "province_id_province2", DBVarType.PROVINCE_FK);
+        mhnrighbor.addVariable("id1", "first_province_id", DBVarType.PROVINCE_FK);
+        mhnrighbor.addVariable("id2", "second_province_id", DBVarType.PROVINCE_FK);
         BaseDialog baseDialog2 = new BaseDialog(mhnrighbor);
         
         mhplayertype = new ModularHandler("Player type","player_type",true,PlayerType.class);
@@ -58,8 +58,8 @@ public class MainManager {
         BaseDialog baseDialog3 = new BaseDialog(mhplayertype);
         
         mpresource = new ModularHandler("Resource","resource",true,Resource.class);
-        mpresource.addVariable("id", "id_resurce", DBVarType.LONG);
-        mpresource.addVariable("name", "resource_name", DBVarType.VARCHAR);
+        mpresource.addVariable("id", "id_resource", DBVarType.LONG);
+        mpresource.addVariable("name", "name_resource", DBVarType.VARCHAR);
         BaseDialog baseDialog4 = new BaseDialog(mpresource);
         
         mhday = new ModularHandler("Day","simday",false,Simday.class);
@@ -68,16 +68,16 @@ public class MainManager {
         
         mhclan = new ModularHandler("Clan","clan",true,Clan.class);
         mhclan.addVariable("id", "id_clan", DBVarType.LONG);
-        mhclan.addVariable("name", "nameclan", DBVarType.VARCHAR);
+        mhclan.addVariable("name", "name_clan", DBVarType.VARCHAR);
         BaseDialog baseDialog6 = new BaseDialog(mhclan);
         
         mhplayer = new ModularHandler("Player","player",true,Clan.class);
         mhplayer.addVariable("id", "id_player", DBVarType.LONG);
         mhplayer.addVariable("name", "name", DBVarType.VARCHAR);
         mhplayer.addVariable("login", "login", DBVarType.VARCHAR);
-        mhplayer.addVariable("password", "password_2", DBVarType.VARCHAR);
-        mhplayer.addVariable("type", "player_type_id_player_type", DBVarType.LONG);
-        mhplayer.addVariable("clan", "clan_id_clan", DBVarType.CLAN_FK);
+        mhplayer.addVariable("password", "password", DBVarType.VARCHAR);
+        mhplayer.addVariable("type", "player_type_id", DBVarType.LONG);
+        mhplayer.addVariable("clan", "clan_id", DBVarType.CLAN_FK);
         BaseDialog baseDialog7 = new BaseDialog(mhplayer);
         
         mw.addButton(new BaseDialogButton(baseDialog));
