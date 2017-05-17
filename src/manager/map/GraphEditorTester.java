@@ -13,17 +13,29 @@ public class GraphEditorTester extends JFrame {
 
     public GraphEditorTester() {
         setTitle("Map of Japan");
-        setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-        graphEditor = new GraphEditor(500, 500);
-        getContentPane().add(graphEditor);
-        pack();
-        setVisible(true);    }
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setLocation(350,0);
+        reeditor();
+    }
     
     public void passTarget(JProvinceButton target) {
+        setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
     	graphEditor.passTarget(target);
     }
     
     public void createButtonWizard(JButton button) {
         GraphEditorTester get = new GraphEditorTester();
+    }
+    
+    public void reeditor() {
+        getContentPane().removeAll();
+        graphEditor = new GraphEditor(900, 800,this);
+        getContentPane().add(graphEditor);
+        pack();
+        setVisible(true);
+    }
+    
+    public GraphEditor getEditor() {
+        return graphEditor;
     }
 }

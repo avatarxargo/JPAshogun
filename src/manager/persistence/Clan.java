@@ -31,7 +31,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "Clan.findAll", query = "SELECT c FROM Clan c"),
     @NamedQuery(name = "Clan.findByIdClan", query = "SELECT c FROM Clan c WHERE c.idClan = :idClan"),
-    @NamedQuery(name = "Clan.findByNameclan", query = "SELECT c FROM Clan c WHERE c.nameclan = :nameclan")})
+    @NamedQuery(name = "Clan.findByNameClan", query = "SELECT c FROM Clan c WHERE c.nameClan = :nameClan")})
 public class Clan implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -40,15 +40,17 @@ public class Clan implements Serializable {
     @Column(name = "id_clan")
     private Integer idClan;
     @Basic(optional = false)
-    @Column(name = "nameclan")
-    private String nameclan;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "clanIdClan")
+    @Column(name = "name_clan")
+    private String nameClan;
+    @OneToMany(mappedBy = "clanIdClan")
     private Collection<Resources> resourcesCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "clanIdClan")
-    private Collection<Transactions> transactionsCollection;
-    @OneToMany(mappedBy = "clanIdClan")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "clanId")
+    private Collection<OwnedResource> ownedResourceCollection;
+    @OneToMany(mappedBy = "clanControlId")
     private Collection<Province> provinceCollection;
-    @OneToMany(mappedBy = "clanIdClan")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "clanId")
+    private Collection<Simday> simdayCollection;
+    @OneToMany(mappedBy = "clanId")
     private Collection<Player> playerCollection;
 
     public Clan() {
@@ -58,9 +60,9 @@ public class Clan implements Serializable {
         this.idClan = idClan;
     }
 
-    public Clan(Integer idClan, String nameclan) {
+    public Clan(Integer idClan, String nameClan) {
         this.idClan = idClan;
-        this.nameclan = nameclan;
+        this.nameClan = nameClan;
     }
 
     public Integer getIdClan() {
@@ -71,12 +73,12 @@ public class Clan implements Serializable {
         this.idClan = idClan;
     }
 
-    public String getNameclan() {
-        return nameclan;
+    public String getNameClan() {
+        return nameClan;
     }
 
-    public void setNameclan(String nameclan) {
-        this.nameclan = nameclan;
+    public void setNameClan(String nameClan) {
+        this.nameClan = nameClan;
     }
 
     @XmlTransient
@@ -89,12 +91,12 @@ public class Clan implements Serializable {
     }
 
     @XmlTransient
-    public Collection<Transactions> getTransactionsCollection() {
-        return transactionsCollection;
+    public Collection<OwnedResource> getOwnedResourceCollection() {
+        return ownedResourceCollection;
     }
 
-    public void setTransactionsCollection(Collection<Transactions> transactionsCollection) {
-        this.transactionsCollection = transactionsCollection;
+    public void setOwnedResourceCollection(Collection<OwnedResource> ownedResourceCollection) {
+        this.ownedResourceCollection = ownedResourceCollection;
     }
 
     @XmlTransient
@@ -104,6 +106,15 @@ public class Clan implements Serializable {
 
     public void setProvinceCollection(Collection<Province> provinceCollection) {
         this.provinceCollection = provinceCollection;
+    }
+
+    @XmlTransient
+    public Collection<Simday> getSimdayCollection() {
+        return simdayCollection;
+    }
+
+    public void setSimdayCollection(Collection<Simday> simdayCollection) {
+        this.simdayCollection = simdayCollection;
     }
 
     @XmlTransient

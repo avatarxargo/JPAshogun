@@ -29,7 +29,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "Resources.findAll", query = "SELECT r FROM Resources r"),
     @NamedQuery(name = "Resources.findByIdResources", query = "SELECT r FROM Resources r WHERE r.idResources = :idResources"),
-    @NamedQuery(name = "Resources.findByAmount", query = "SELECT r FROM Resources r WHERE r.amount = :amount")})
+    @NamedQuery(name = "Resources.findByAmount", query = "SELECT r FROM Resources r WHERE r.amount = :amount"),
+    @NamedQuery(name = "Resources.findByResourceIdResurce", query = "SELECT r FROM Resources r WHERE r.resourceIdResurce = :resourceIdResurce")})
 public class Resources implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -37,26 +38,19 @@ public class Resources implements Serializable {
     @Basic(optional = false)
     @Column(name = "id_resources")
     private Integer idResources;
-    @Basic(optional = false)
     @Column(name = "amount")
-    private int amount;
+    private Integer amount;
+    @Column(name = "resource_id_resurce")
+    private Integer resourceIdResurce;
     @JoinColumn(name = "clan_id_clan", referencedColumnName = "id_clan")
-    @ManyToOne(optional = false)
+    @ManyToOne
     private Clan clanIdClan;
-    @JoinColumn(name = "resource_id_resurce", referencedColumnName = "id_resurce")
-    @ManyToOne(optional = false)
-    private Resource resourceIdResurce;
 
     public Resources() {
     }
 
     public Resources(Integer idResources) {
         this.idResources = idResources;
-    }
-
-    public Resources(Integer idResources, int amount) {
-        this.idResources = idResources;
-        this.amount = amount;
     }
 
     public Integer getIdResources() {
@@ -67,12 +61,20 @@ public class Resources implements Serializable {
         this.idResources = idResources;
     }
 
-    public int getAmount() {
+    public Integer getAmount() {
         return amount;
     }
 
-    public void setAmount(int amount) {
+    public void setAmount(Integer amount) {
         this.amount = amount;
+    }
+
+    public Integer getResourceIdResurce() {
+        return resourceIdResurce;
+    }
+
+    public void setResourceIdResurce(Integer resourceIdResurce) {
+        this.resourceIdResurce = resourceIdResurce;
     }
 
     public Clan getClanIdClan() {
@@ -81,14 +83,6 @@ public class Resources implements Serializable {
 
     public void setClanIdClan(Clan clanIdClan) {
         this.clanIdClan = clanIdClan;
-    }
-
-    public Resource getResourceIdResurce() {
-        return resourceIdResurce;
-    }
-
-    public void setResourceIdResurce(Resource resourceIdResurce) {
-        this.resourceIdResurce = resourceIdResurce;
     }
 
     @Override

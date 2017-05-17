@@ -33,8 +33,8 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "Building.findAll", query = "SELECT b FROM Building b"),
     @NamedQuery(name = "Building.findByIdBuilding", query = "SELECT b FROM Building b WHERE b.idBuilding = :idBuilding"),
-    @NamedQuery(name = "Building.findByBuildingName", query = "SELECT b FROM Building b WHERE b.buildingName = :buildingName"),
-    @NamedQuery(name = "Building.findByCost", query = "SELECT b FROM Building b WHERE b.cost = :cost")})
+    @NamedQuery(name = "Building.findByNameBuilding", query = "SELECT b FROM Building b WHERE b.nameBuilding = :nameBuilding"),
+    @NamedQuery(name = "Building.findByCostValue", query = "SELECT b FROM Building b WHERE b.costValue = :costValue")})
 public class Building implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -43,16 +43,18 @@ public class Building implements Serializable {
     @Column(name = "id_building")
     private Integer idBuilding;
     @Basic(optional = false)
-    @Column(name = "building_name")
-    private String buildingName;
+    @Column(name = "name_building")
+    private String nameBuilding;
     @Basic(optional = false)
-    @Column(name = "cost")
-    private int cost;
-    @JoinColumn(name = "resource_id_resurce", referencedColumnName = "id_resurce")
+    @Column(name = "cost_value")
+    private int costValue;
+    @JoinColumn(name = "cost_resource_id", referencedColumnName = "id_resource")
     @ManyToOne(optional = false)
-    private Resource resourceIdResurce;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "buildingIdBuilding")
+    private Resource costResourceId;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "buildingTypeId")
     private Collection<TransactionBuild> transactionBuildCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "buildingId")
+    private Collection<OwnedBuildings> ownedBuildingsCollection;
 
     public Building() {
     }
@@ -61,10 +63,10 @@ public class Building implements Serializable {
         this.idBuilding = idBuilding;
     }
 
-    public Building(Integer idBuilding, String buildingName, int cost) {
+    public Building(Integer idBuilding, String nameBuilding, int costValue) {
         this.idBuilding = idBuilding;
-        this.buildingName = buildingName;
-        this.cost = cost;
+        this.nameBuilding = nameBuilding;
+        this.costValue = costValue;
     }
 
     public Integer getIdBuilding() {
@@ -75,28 +77,28 @@ public class Building implements Serializable {
         this.idBuilding = idBuilding;
     }
 
-    public String getBuildingName() {
-        return buildingName;
+    public String getNameBuilding() {
+        return nameBuilding;
     }
 
-    public void setBuildingName(String buildingName) {
-        this.buildingName = buildingName;
+    public void setNameBuilding(String nameBuilding) {
+        this.nameBuilding = nameBuilding;
     }
 
-    public int getCost() {
-        return cost;
+    public int getCostValue() {
+        return costValue;
     }
 
-    public void setCost(int cost) {
-        this.cost = cost;
+    public void setCostValue(int costValue) {
+        this.costValue = costValue;
     }
 
-    public Resource getResourceIdResurce() {
-        return resourceIdResurce;
+    public Resource getCostResourceId() {
+        return costResourceId;
     }
 
-    public void setResourceIdResurce(Resource resourceIdResurce) {
-        this.resourceIdResurce = resourceIdResurce;
+    public void setCostResourceId(Resource costResourceId) {
+        this.costResourceId = costResourceId;
     }
 
     @XmlTransient
@@ -106,6 +108,15 @@ public class Building implements Serializable {
 
     public void setTransactionBuildCollection(Collection<TransactionBuild> transactionBuildCollection) {
         this.transactionBuildCollection = transactionBuildCollection;
+    }
+
+    @XmlTransient
+    public Collection<OwnedBuildings> getOwnedBuildingsCollection() {
+        return ownedBuildingsCollection;
+    }
+
+    public void setOwnedBuildingsCollection(Collection<OwnedBuildings> ownedBuildingsCollection) {
+        this.ownedBuildingsCollection = ownedBuildingsCollection;
     }
 
     @Override

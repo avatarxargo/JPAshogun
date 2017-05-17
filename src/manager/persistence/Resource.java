@@ -30,60 +30,58 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Resource.findAll", query = "SELECT r FROM Resource r"),
-    @NamedQuery(name = "Resource.findByIdResurce", query = "SELECT r FROM Resource r WHERE r.idResurce = :idResurce"),
-    @NamedQuery(name = "Resource.findByResourceName", query = "SELECT r FROM Resource r WHERE r.resourceName = :resourceName")})
+    @NamedQuery(name = "Resource.findByIdResource", query = "SELECT r FROM Resource r WHERE r.idResource = :idResource"),
+    @NamedQuery(name = "Resource.findByNameResource", query = "SELECT r FROM Resource r WHERE r.nameResource = :nameResource")})
 public class Resource implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "id_resurce")
-    private Integer idResurce;
+    @Column(name = "id_resource")
+    private Integer idResource;
     @Basic(optional = false)
-    @Column(name = "resource_name")
-    private String resourceName;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "resourceIdResurce")
-    private Collection<Resources> resourcesCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "resourceIdResurce")
+    @Column(name = "name_resource")
+    private String nameResource;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "resourceId")
+    private Collection<OwnedResource> ownedResourceCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "costResourceId")
     private Collection<Building> buildingCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "resourceIdResurce")
-    private Collection<TransactionTrain> transactionTrainCollection;
 
     public Resource() {
     }
 
-    public Resource(Integer idResurce) {
-        this.idResurce = idResurce;
+    public Resource(Integer idResource) {
+        this.idResource = idResource;
     }
 
-    public Resource(Integer idResurce, String resourceName) {
-        this.idResurce = idResurce;
-        this.resourceName = resourceName;
+    public Resource(Integer idResource, String nameResource) {
+        this.idResource = idResource;
+        this.nameResource = nameResource;
     }
 
-    public Integer getIdResurce() {
-        return idResurce;
+    public Integer getIdResource() {
+        return idResource;
     }
 
-    public void setIdResurce(Integer idResurce) {
-        this.idResurce = idResurce;
+    public void setIdResource(Integer idResource) {
+        this.idResource = idResource;
     }
 
-    public String getResourceName() {
-        return resourceName;
+    public String getNameResource() {
+        return nameResource;
     }
 
-    public void setResourceName(String resourceName) {
-        this.resourceName = resourceName;
+    public void setNameResource(String nameResource) {
+        this.nameResource = nameResource;
     }
 
     @XmlTransient
-    public Collection<Resources> getResourcesCollection() {
-        return resourcesCollection;
+    public Collection<OwnedResource> getOwnedResourceCollection() {
+        return ownedResourceCollection;
     }
 
-    public void setResourcesCollection(Collection<Resources> resourcesCollection) {
-        this.resourcesCollection = resourcesCollection;
+    public void setOwnedResourceCollection(Collection<OwnedResource> ownedResourceCollection) {
+        this.ownedResourceCollection = ownedResourceCollection;
     }
 
     @XmlTransient
@@ -95,19 +93,10 @@ public class Resource implements Serializable {
         this.buildingCollection = buildingCollection;
     }
 
-    @XmlTransient
-    public Collection<TransactionTrain> getTransactionTrainCollection() {
-        return transactionTrainCollection;
-    }
-
-    public void setTransactionTrainCollection(Collection<TransactionTrain> transactionTrainCollection) {
-        this.transactionTrainCollection = transactionTrainCollection;
-    }
-
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (idResurce != null ? idResurce.hashCode() : 0);
+        hash += (idResource != null ? idResource.hashCode() : 0);
         return hash;
     }
 
@@ -118,7 +107,7 @@ public class Resource implements Serializable {
             return false;
         }
         Resource other = (Resource) object;
-        if ((this.idResurce == null && other.idResurce != null) || (this.idResurce != null && !this.idResurce.equals(other.idResurce))) {
+        if ((this.idResource == null && other.idResource != null) || (this.idResource != null && !this.idResource.equals(other.idResource))) {
             return false;
         }
         return true;
@@ -126,7 +115,7 @@ public class Resource implements Serializable {
 
     @Override
     public String toString() {
-        return "manager.persistence.Resource[ idResurce=" + idResurce + " ]";
+        return "manager.persistence.Resource[ idResource=" + idResource + " ]";
     }
     
 }

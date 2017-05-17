@@ -6,8 +6,14 @@
 package manager.persistence;
 
 import java.io.Serializable;
-import javax.persistence.EmbeddedId;
+import javax.persistence.Basic;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -22,36 +28,56 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Neighbour.findAll", query = "SELECT n FROM Neighbour n"),
-    @NamedQuery(name = "Neighbour.findByProvinceIdProvince1", query = "SELECT n FROM Neighbour n WHERE n.neighbourPK.provinceIdProvince1 = :provinceIdProvince1"),
-    @NamedQuery(name = "Neighbour.findByProvinceIdProvince2", query = "SELECT n FROM Neighbour n WHERE n.neighbourPK.provinceIdProvince2 = :provinceIdProvince2")})
+    @NamedQuery(name = "Neighbour.findByIdNeighbour", query = "SELECT n FROM Neighbour n WHERE n.idNeighbour = :idNeighbour")})
 public class Neighbour implements Serializable {
     private static final long serialVersionUID = 1L;
-    @EmbeddedId
-    protected NeighbourPK neighbourPK;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "id_neighbour")
+    private Integer idNeighbour;
+    @JoinColumn(name = "first_province_id", referencedColumnName = "id_province")
+    @ManyToOne(optional = false)
+    private Province firstProvinceId;
+    @JoinColumn(name = "second_province_id", referencedColumnName = "id_province")
+    @ManyToOne(optional = false)
+    private Province secondProvinceId;
 
     public Neighbour() {
     }
 
-    public Neighbour(NeighbourPK neighbourPK) {
-        this.neighbourPK = neighbourPK;
+    public Neighbour(Integer idNeighbour) {
+        this.idNeighbour = idNeighbour;
     }
 
-    public Neighbour(int provinceIdProvince1, int provinceIdProvince2) {
-        this.neighbourPK = new NeighbourPK(provinceIdProvince1, provinceIdProvince2);
+    public Integer getIdNeighbour() {
+        return idNeighbour;
     }
 
-    public NeighbourPK getNeighbourPK() {
-        return neighbourPK;
+    public void setIdNeighbour(Integer idNeighbour) {
+        this.idNeighbour = idNeighbour;
     }
 
-    public void setNeighbourPK(NeighbourPK neighbourPK) {
-        this.neighbourPK = neighbourPK;
+    public Province getFirstProvinceId() {
+        return firstProvinceId;
+    }
+
+    public void setFirstProvinceId(Province firstProvinceId) {
+        this.firstProvinceId = firstProvinceId;
+    }
+
+    public Province getSecondProvinceId() {
+        return secondProvinceId;
+    }
+
+    public void setSecondProvinceId(Province secondProvinceId) {
+        this.secondProvinceId = secondProvinceId;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (neighbourPK != null ? neighbourPK.hashCode() : 0);
+        hash += (idNeighbour != null ? idNeighbour.hashCode() : 0);
         return hash;
     }
 
@@ -62,7 +88,7 @@ public class Neighbour implements Serializable {
             return false;
         }
         Neighbour other = (Neighbour) object;
-        if ((this.neighbourPK == null && other.neighbourPK != null) || (this.neighbourPK != null && !this.neighbourPK.equals(other.neighbourPK))) {
+        if ((this.idNeighbour == null && other.idNeighbour != null) || (this.idNeighbour != null && !this.idNeighbour.equals(other.idNeighbour))) {
             return false;
         }
         return true;
@@ -70,7 +96,7 @@ public class Neighbour implements Serializable {
 
     @Override
     public String toString() {
-        return "manager.persistence.Neighbour[ neighbourPK=" + neighbourPK + " ]";
+        return "manager.persistence.Neighbour[ idNeighbour=" + idNeighbour + " ]";
     }
     
 }

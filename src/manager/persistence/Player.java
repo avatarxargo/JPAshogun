@@ -31,7 +31,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Player.findByIdPlayer", query = "SELECT p FROM Player p WHERE p.idPlayer = :idPlayer"),
     @NamedQuery(name = "Player.findByName", query = "SELECT p FROM Player p WHERE p.name = :name"),
     @NamedQuery(name = "Player.findByLogin", query = "SELECT p FROM Player p WHERE p.login = :login"),
-    @NamedQuery(name = "Player.findByPassword2", query = "SELECT p FROM Player p WHERE p.password2 = :password2")})
+    @NamedQuery(name = "Player.findByPassword", query = "SELECT p FROM Player p WHERE p.password = :password")})
 public class Player implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -46,14 +46,14 @@ public class Player implements Serializable {
     @Column(name = "login")
     private String login;
     @Basic(optional = false)
-    @Column(name = "password_2")
-    private String password2;
-    @JoinColumn(name = "clan_id_clan", referencedColumnName = "id_clan")
+    @Column(name = "password")
+    private String password;
+    @JoinColumn(name = "clan_id", referencedColumnName = "id_clan")
     @ManyToOne
-    private Clan clanIdClan;
-    @JoinColumn(name = "player_type_id_player_type", referencedColumnName = "id_player_type")
+    private Clan clanId;
+    @JoinColumn(name = "player_type_id", referencedColumnName = "id_player_type")
     @ManyToOne(optional = false)
-    private PlayerType playerTypeIdPlayerType;
+    private PlayerType playerTypeId;
 
     public Player() {
     }
@@ -62,11 +62,11 @@ public class Player implements Serializable {
         this.idPlayer = idPlayer;
     }
 
-    public Player(Integer idPlayer, String name, String login, String password2) {
+    public Player(Integer idPlayer, String name, String login, String password) {
         this.idPlayer = idPlayer;
         this.name = name;
         this.login = login;
-        this.password2 = password2;
+        this.password = password;
     }
 
     public Integer getIdPlayer() {
@@ -93,28 +93,28 @@ public class Player implements Serializable {
         this.login = login;
     }
 
-    public String getPassword2() {
-        return password2;
+    public String getPassword() {
+        return password;
     }
 
-    public void setPassword2(String password2) {
-        this.password2 = password2;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
-    public Clan getClanIdClan() {
-        return clanIdClan;
+    public Clan getClanId() {
+        return clanId;
     }
 
-    public void setClanIdClan(Clan clanIdClan) {
-        this.clanIdClan = clanIdClan;
+    public void setClanId(Clan clanId) {
+        this.clanId = clanId;
     }
 
-    public PlayerType getPlayerTypeIdPlayerType() {
-        return playerTypeIdPlayerType;
+    public PlayerType getPlayerTypeId() {
+        return playerTypeId;
     }
 
-    public void setPlayerTypeIdPlayerType(PlayerType playerTypeIdPlayerType) {
-        this.playerTypeIdPlayerType = playerTypeIdPlayerType;
+    public void setPlayerTypeId(PlayerType playerTypeId) {
+        this.playerTypeId = playerTypeId;
     }
 
     @Override

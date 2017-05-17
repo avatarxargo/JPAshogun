@@ -1,5 +1,6 @@
 package manager.window;
 
+import java.awt.GridLayout;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Iterator;
@@ -10,16 +11,25 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
+import javax.swing.JFrame;
 import manager.dialog.BaseDialog;
 import manager.dialog.DBVariable.DBVarType;
 import manager.dialog.ModularHandler;
 import manager.dialog.ProvinceHandler;
 import manager.dialog.popups.BaseDialogButton;
+import manager.map.GraphEditor;
+import manager.map.GraphEditorTester;
+import manager.persistence.Building;
 import manager.persistence.Clan;
+import manager.persistence.Neighbour;
 import manager.persistence.PlayerType;
 import manager.persistence.Province;
 import manager.persistence.Resource;
 import manager.persistence.Simday;
+import manager.persistence.TransactionBuild;
+import manager.persistence.TransactionMove;
+import manager.persistence.TransactionTrain;
+import manager.persistence.Transactions;
 import manager.persistence.pulled.ProvinceLocal;
 import manager.persistence.pulled.ProvinceNeighborsLocal;
 
@@ -31,12 +41,21 @@ public class MainManager {
     private static EntityTransaction tx;
     private static EntityManager em;
     
+    private static JFrame toolkit;
+    private static GraphEditorTester map;
+    
     public static ModularHandler mhprovince, mhnrighbor, mhplayertype,
-            mpresource, mhday, mhclan, mhplayer;
+            mpresource, mhday, mhclan, mhplayer, mhbuilding, mhownbuilding,
+            mhtransactions, mhtranb, mhtrant, mhtranmov;
 
     public static void main(String[] args) {
         init();
-        mw = new ManagerWindow();
+        //mw = new ManagerWindow();
+        
+        toolkit = new JFrame("Shogun Admin Toolkit");
+        toolkit.setLayout(new GridLayout(13,1));
+        toolkit.setSize(350,600);
+        map = new GraphEditorTester();
         
         mhprovince = new ModularHandler("Province","province",true,Province.class);
         mhprovince.addVariable("id", "id_province", DBVarType.LONG);
@@ -45,11 +64,14 @@ public class MainManager {
         mhprovince.addVariable("clan", "clan_control_id", DBVarType.CLAN_FK);
         mhprovince.addVariable("x", "x", DBVarType.LONG);
         mhprovince.addVariable("y", "y", DBVarType.LONG);
+        mhprovince.addVariable("train cost", "cost_one_army_unit_value", DBVarType.LONG);
+        mhprovince.addVariable("train res", "cost_one_army_unit_resource_id", DBVarType.RESOURCE_FK);
         BaseDialog baseDialog = new BaseDialog(mhprovince);
         
-        mhnrighbor = new ModularHandler("Neighbour","neighbour",false,null);
-        mhnrighbor.addVariable("id1", "first_province_id", DBVarType.PROVINCE_FK);
-        mhnrighbor.addVariable("id2", "second_province_id", DBVarType.PROVINCE_FK);
+        mhnrighbor = new ModularHandler("Neighbour","neighbour",true,Neighbour.class);
+        mhnrighbor.addVariable("id", "id_neighbour", DBVarType.LONG);
+        mhnrighbor.addVariable("province 1", "first_province_id", DBVarType.PROVINCE_FK);
+        mhnrighbor.addVariable("province 2", "second_province_id", DBVarType.PROVINCE_FK);
         BaseDialog baseDialog2 = new BaseDialog(mhnrighbor);
         
         mhplayertype = new ModularHandler("Player type","player_type",true,PlayerType.class);
@@ -62,8 +84,11 @@ public class MainManager {
         mpresource.addVariable("name", "name_resource", DBVarType.VARCHAR);
         BaseDialog baseDialog4 = new BaseDialog(mpresource);
         
-        mhday = new ModularHandler("Day","simday",false,Simday.class);
+        mhday = new ModularHandler("Simday","simday",true,Simday.class);
         mhday.addVariable("id", "id_simday", DBVarType.LONG);
+        mhday.addVariable("day number", "day_number", DBVarType.LONG);
+        mhday.addVariable("clan", "clan_id", DBVarType.CLAN_FK);
+        mhday.addVariable("province", "province_id", DBVarType.PROVINCE_FK);
         BaseDialog baseDialog5 = new BaseDialog(mhday);
         
         mhclan = new ModularHandler("Clan","clan",true,Clan.class);
@@ -76,23 +101,84 @@ public class MainManager {
         mhplayer.addVariable("name", "name", DBVarType.VARCHAR);
         mhplayer.addVariable("login", "login", DBVarType.VARCHAR);
         mhplayer.addVariable("password", "password", DBVarType.VARCHAR);
-        mhplayer.addVariable("type", "player_type_id", DBVarType.LONG);
+        mhplayer.addVariable("type", "player_type_id", DBVarType.PLTYPE_FK);
         mhplayer.addVariable("clan", "clan_id", DBVarType.CLAN_FK);
         BaseDialog baseDialog7 = new BaseDialog(mhplayer);
         
-        mw.addButton(new BaseDialogButton(baseDialog));
-        mw.addButton(new BaseDialogButton(baseDialog2));
-        mw.addButton(new BaseDialogButton(baseDialog3));
-        mw.addButton(new BaseDialogButton(baseDialog4));
-        mw.addButton(new BaseDialogButton(baseDialog5));
-        mw.addButton(new BaseDialogButton(baseDialog6));
-        mw.addButton(new BaseDialogButton(baseDialog7));
+        mhbuilding = new ModularHandler("Building","building",true,Building.class);
+        mhbuilding.addVariable("id", "id_building", DBVarType.LONG);
+        mhbuilding.addVariable("name", "name_building", DBVarType.VARCHAR);
+        mhbuilding.addVariable("cost", "cost_value", DBVarType.LONG);
+        mhbuilding.addVariable("resource", "cost_resource_id", DBVarType.RESOURCE_FK);
+        BaseDialog baseDialog8 = new BaseDialog(mhbuilding);
+        
+        mhownbuilding = new ModularHandler("Owned Building","owned_buildings",true,Building.class);
+        mhownbuilding.addVariable("id", "id_owned_buildings", DBVarType.LONG);
+        mhownbuilding.addVariable("province", "province_id", DBVarType.PROVINCE_FK);
+        mhownbuilding.addVariable("building", "building_id", DBVarType.BUILDING_FK);
+        mhownbuilding.addVariable("count", "amount_buildings", DBVarType.LONG);
+        BaseDialog baseDialog9 = new BaseDialog(mhownbuilding);
+        /*
+        mhtransactions = new ModularHandler("Transactions","transactions",true,Transactions.class);
+        mhtransactions.addVariable("type", "type", DBVarType.VARCHAR);
+        mhtransactions.addVariable("simday", "day", DBVarType.LONG);
+        mhtransactions.addVariable("province 1", "province1", DBVarType.PROVINCE_FK);
+        mhtransactions.addVariable("province 2", "province2", DBVarType.PROVINCE_FK);
+        mhtransactions.addVariable("count", "count", DBVarType.LONG);
+        mhtransactions.addVariable("building", "building", DBVarType.BUILDING_FK);   
+        BaseDialog baseDialog10 = new BaseDialog(mhtransactions);
+        */
+        mhtranb = new ModularHandler("Transaction Build","transaction_build",true,TransactionBuild.class);
+        mhtranb.addVariable("id", "id_transaction_build", DBVarType.LONG);
+        mhtranb.addVariable("day", "simday_number", DBVarType.LONG);
+        mhtranb.addVariable("province", "province_id", DBVarType.PROVINCE_FK);
+        mhtranb.addVariable("building type", "building_type_id", DBVarType.BUILDING_FK);
+        mhtranb.addVariable("count", "count_buildings", DBVarType.LONG);
+        BaseDialog baseDialog11 = new BaseDialog(mhtranb);
+        
+        mhtrant = new ModularHandler("Transaction Train","transaction_train",true,TransactionTrain.class);
+        mhtrant.addVariable("id", "id_transaction_train", DBVarType.LONG);
+        mhtrant.addVariable("day", "simday_number", DBVarType.LONG);
+        mhtrant.addVariable("province", "province_id", DBVarType.PROVINCE_FK);
+        mhtrant.addVariable("count", "count_army", DBVarType.LONG);
+        BaseDialog baseDialog12 = new BaseDialog(mhtrant);
+        
+        mhtranmov = new ModularHandler("Transaction Move","transaction_move",true,TransactionMove.class);
+        mhtranmov.addVariable("id", "id_transaction_move", DBVarType.LONG);
+        mhtranmov.addVariable("day", "simday_number", DBVarType.LONG);
+        mhtranmov.addVariable("from province", "province_from_id", DBVarType.PROVINCE_FK);
+        mhtranmov.addVariable("to province", "province_to_id", DBVarType.PROVINCE_FK);
+        mhtranmov.addVariable("number of troops", "army_units", DBVarType.LONG);
+        BaseDialog baseDialog13 = new BaseDialog(mhtranmov);
+        
+        toolkit.add(new BaseDialogButton(baseDialog));
+        toolkit.add(new BaseDialogButton(baseDialog2));
+        toolkit.add(new BaseDialogButton(baseDialog3));
+        toolkit.add(new BaseDialogButton(baseDialog4));
+        toolkit.add(new BaseDialogButton(baseDialog5));
+        toolkit.add(new BaseDialogButton(baseDialog6));
+        toolkit.add(new BaseDialogButton(baseDialog7));
+        toolkit.add(new BaseDialogButton(baseDialog8));
+        toolkit.add(new BaseDialogButton(baseDialog9));
+        //toolkit.add(new BaseDialogButton(baseDialog10));
+        toolkit.add(new BaseDialogButton(baseDialog11));
+        toolkit.add(new BaseDialogButton(baseDialog12));
+        toolkit.add(new BaseDialogButton(baseDialog13));
+        toolkit.setVisible(true);
     }
     
     public static EntityManager getEM() {
         return em;
     }
 
+    public static GraphEditor getGraphEditor() {
+        return map.getEditor();
+    }
+    
+    public static void reeditor() {
+        map.reeditor();
+    }
+    
     /**
      * Connects to the database
      */

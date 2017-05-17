@@ -14,6 +14,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -30,7 +32,8 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Simday.findAll", query = "SELECT s FROM Simday s"),
-    @NamedQuery(name = "Simday.findByIdSimday", query = "SELECT s FROM Simday s WHERE s.idSimday = :idSimday")})
+    @NamedQuery(name = "Simday.findByIdSimday", query = "SELECT s FROM Simday s WHERE s.idSimday = :idSimday"),
+    @NamedQuery(name = "Simday.findByDayNumber", query = "SELECT s FROM Simday s WHERE s.dayNumber = :dayNumber")})
 public class Simday implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -38,14 +41,32 @@ public class Simday implements Serializable {
     @Basic(optional = false)
     @Column(name = "id_simday")
     private Integer idSimday;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "simdayIdSimday")
-    private Collection<Transactions> transactionsCollection;
+    @Basic(optional = false)
+    @Column(name = "day_number")
+    private int dayNumber;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "simdayNumber")
+    private Collection<TransactionMove> transactionMoveCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "simdayNumber")
+    private Collection<TransactionTrain> transactionTrainCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "simdayNumber")
+    private Collection<TransactionBuild> transactionBuildCollection;
+    @JoinColumn(name = "clan_id", referencedColumnName = "id_clan")
+    @ManyToOne(optional = false)
+    private Clan clanId;
+    @JoinColumn(name = "province_id", referencedColumnName = "id_province")
+    @ManyToOne
+    private Province provinceId;
 
     public Simday() {
     }
 
     public Simday(Integer idSimday) {
         this.idSimday = idSimday;
+    }
+
+    public Simday(Integer idSimday, int dayNumber) {
+        this.idSimday = idSimday;
+        this.dayNumber = dayNumber;
     }
 
     public Integer getIdSimday() {
@@ -56,13 +77,55 @@ public class Simday implements Serializable {
         this.idSimday = idSimday;
     }
 
-    @XmlTransient
-    public Collection<Transactions> getTransactionsCollection() {
-        return transactionsCollection;
+    public int getDayNumber() {
+        return dayNumber;
     }
 
-    public void setTransactionsCollection(Collection<Transactions> transactionsCollection) {
-        this.transactionsCollection = transactionsCollection;
+    public void setDayNumber(int dayNumber) {
+        this.dayNumber = dayNumber;
+    }
+
+    @XmlTransient
+    public Collection<TransactionMove> getTransactionMoveCollection() {
+        return transactionMoveCollection;
+    }
+
+    public void setTransactionMoveCollection(Collection<TransactionMove> transactionMoveCollection) {
+        this.transactionMoveCollection = transactionMoveCollection;
+    }
+
+    @XmlTransient
+    public Collection<TransactionTrain> getTransactionTrainCollection() {
+        return transactionTrainCollection;
+    }
+
+    public void setTransactionTrainCollection(Collection<TransactionTrain> transactionTrainCollection) {
+        this.transactionTrainCollection = transactionTrainCollection;
+    }
+
+    @XmlTransient
+    public Collection<TransactionBuild> getTransactionBuildCollection() {
+        return transactionBuildCollection;
+    }
+
+    public void setTransactionBuildCollection(Collection<TransactionBuild> transactionBuildCollection) {
+        this.transactionBuildCollection = transactionBuildCollection;
+    }
+
+    public Clan getClanId() {
+        return clanId;
+    }
+
+    public void setClanId(Clan clanId) {
+        this.clanId = clanId;
+    }
+
+    public Province getProvinceId() {
+        return provinceId;
+    }
+
+    public void setProvinceId(Province provinceId) {
+        this.provinceId = provinceId;
     }
 
     @Override

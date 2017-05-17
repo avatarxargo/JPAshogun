@@ -6,9 +6,7 @@
 package manager.persistence;
 
 import java.io.Serializable;
-import java.util.Collection;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -18,10 +16,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+import manager.persistence.Province;
+import manager.persistence.Simday;
 
 /**
  *
@@ -33,8 +31,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "TransactionTrain.findAll", query = "SELECT t FROM TransactionTrain t"),
     @NamedQuery(name = "TransactionTrain.findByIdTransactionTrain", query = "SELECT t FROM TransactionTrain t WHERE t.idTransactionTrain = :idTransactionTrain"),
-    @NamedQuery(name = "TransactionTrain.findByCountArmy", query = "SELECT t FROM TransactionTrain t WHERE t.countArmy = :countArmy"),
-    @NamedQuery(name = "TransactionTrain.findByResourcesAmount", query = "SELECT t FROM TransactionTrain t WHERE t.resourcesAmount = :resourcesAmount")})
+    @NamedQuery(name = "TransactionTrain.findByCountArmy", query = "SELECT t FROM TransactionTrain t WHERE t.countArmy = :countArmy")})
 public class TransactionTrain implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -45,17 +42,12 @@ public class TransactionTrain implements Serializable {
     @Basic(optional = false)
     @Column(name = "count_army")
     private int countArmy;
-    @Basic(optional = false)
-    @Column(name = "resources_amount")
-    private int resourcesAmount;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "transactionTrainIdTransactionTrain")
-    private Collection<Transactions> transactionsCollection;
-    @JoinColumn(name = "province_id_province", referencedColumnName = "id_province")
+    @JoinColumn(name = "province_id", referencedColumnName = "id_province")
     @ManyToOne(optional = false)
-    private Province provinceIdProvince;
-    @JoinColumn(name = "resource_id_resurce", referencedColumnName = "id_resurce")
+    private Province provinceId;
+    @JoinColumn(name = "simday_number", referencedColumnName = "id_simday")
     @ManyToOne(optional = false)
-    private Resource resourceIdResurce;
+    private Simday simdayNumber;
 
     public TransactionTrain() {
     }
@@ -64,10 +56,9 @@ public class TransactionTrain implements Serializable {
         this.idTransactionTrain = idTransactionTrain;
     }
 
-    public TransactionTrain(Integer idTransactionTrain, int countArmy, int resourcesAmount) {
+    public TransactionTrain(Integer idTransactionTrain, int countArmy) {
         this.idTransactionTrain = idTransactionTrain;
         this.countArmy = countArmy;
-        this.resourcesAmount = resourcesAmount;
     }
 
     public Integer getIdTransactionTrain() {
@@ -86,37 +77,20 @@ public class TransactionTrain implements Serializable {
         this.countArmy = countArmy;
     }
 
-    public int getResourcesAmount() {
-        return resourcesAmount;
+    public Province getProvinceId() {
+        return provinceId;
     }
 
-    public void setResourcesAmount(int resourcesAmount) {
-        this.resourcesAmount = resourcesAmount;
+    public void setProvinceId(Province provinceId) {
+        this.provinceId = provinceId;
     }
 
-    @XmlTransient
-    public Collection<Transactions> getTransactionsCollection() {
-        return transactionsCollection;
+    public Simday getSimdayNumber() {
+        return simdayNumber;
     }
 
-    public void setTransactionsCollection(Collection<Transactions> transactionsCollection) {
-        this.transactionsCollection = transactionsCollection;
-    }
-
-    public Province getProvinceIdProvince() {
-        return provinceIdProvince;
-    }
-
-    public void setProvinceIdProvince(Province provinceIdProvince) {
-        this.provinceIdProvince = provinceIdProvince;
-    }
-
-    public Resource getResourceIdResurce() {
-        return resourceIdResurce;
-    }
-
-    public void setResourceIdResurce(Resource resourceIdResurce) {
-        this.resourceIdResurce = resourceIdResurce;
+    public void setSimdayNumber(Simday simdayNumber) {
+        this.simdayNumber = simdayNumber;
     }
 
     @Override
@@ -141,7 +115,7 @@ public class TransactionTrain implements Serializable {
 
     @Override
     public String toString() {
-        return "manager.persistence.TransactionTrain[ idTransactionTrain=" + idTransactionTrain + " ]";
+        return "manager.dialog.TransactionTrain[ idTransactionTrain=" + idTransactionTrain + " ]";
     }
     
 }

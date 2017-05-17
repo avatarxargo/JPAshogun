@@ -1,6 +1,7 @@
 package manager.dialog;
 
 import java.awt.Component;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -8,7 +9,10 @@ import javax.persistence.Query;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
@@ -28,7 +32,7 @@ public class NewWizardModular extends JFrame {
     private ArrayList<VarField> field;
     private boolean firstid;
 
-    public NewWizardModular(String name, ArrayList<DBVariable> vars, String tableName, boolean firstid) {
+    public NewWizardModular(String name, ArrayList<DBVariable> vars, String tableName, String[] columnNames, boolean firstid) {
         this.setSize(400, 200);
         this.setDefaultCloseOperation(HIDE_ON_CLOSE);
         this.setLocation(200, 200);
@@ -46,28 +50,69 @@ public class NewWizardModular extends JFrame {
             vf.var = vars.get(i);
             switch (vf.var.type) {
                 case LONG:
-                    JSpinner spn = new JSpinner(new SpinnerNumberModel(0, -1000, 1000, 10));
-                    add(spn);
+                    JSpinner spn = new JSpinner(new SpinnerNumberModel(0, -1000, 1000, 1));
+                    add(frame(columnNames[i],spn));
                     vf.cmp = spn;
                     break;
                 case PROVINCE_FK:
                     JProvinceButton btn = new JProvinceButton();
-                    add(btn);
+                    add(frame(columnNames[i],btn));
                     vf.cmp = btn;
                     break;
                 case CLAN_FK:
                     JComboBox jcb = MainManager.mhclan.getComboBox();
-                    add(jcb);
+                    add(frame(columnNames[i],jcb));
                     vf.cmp = jcb;
+                    break;
+                case PLTYPE_FK:
+                    JComboBox jcb2 = MainManager.mhplayertype.getComboBox();
+                    add(frame(columnNames[i],jcb2));
+                    vf.cmp = jcb2;
+                    break;
+                case RESOURCE_FK:
+                    JComboBox jcb3 = MainManager.mpresource.getComboBox();
+                    add(frame(columnNames[i],jcb3));
+                    vf.cmp = jcb3;
+                    break;
+                case BUILDING_FK:
+                    JComboBox jcb4 = MainManager.mhbuilding.getComboBox();
+                    add(frame(columnNames[i],jcb4));
+                    vf.cmp = jcb4;
+                    break;
+                case SIMDAY_NUMBER:
+                    //TODO
+                    break;
+                case TRANSACTION_BUILD_FK:
+                    JComboBox jcb5 = MainManager.mhtranb.getComboBox();
+                    add(frame(columnNames[i],jcb5));
+                    vf.cmp = jcb5;
+                    break;
+                case TRANSACTION_TRAIN_FK:
+                    JComboBox jcb6 = MainManager.mhtrant.getComboBox();
+                    add(frame(columnNames[i],jcb6));
+                    vf.cmp = jcb6;
+                    break;
+                case TRANSACTION_MOVE_FK:
+                    JComboBox jcb7 = MainManager.mhtranmov.getComboBox();
+                    add(frame(columnNames[i],jcb7));
+                    vf.cmp = jcb7;
                     break;
                 default:
                     JTextField fld = new JTextField();
-                    add(fld);
+                    add(frame(columnNames[i],fld));
                     vf.cmp = fld;
             }
             field.add(vf);
         }
         setVisible(true);
+    }
+    
+    private JPanel frame(String name, JComponent j) {
+        JPanel pan = new JPanel();
+        pan.setLayout(new GridLayout(1,2));
+        pan.add(new JLabel(name));
+        pan.add(j);
+        return pan;
     }
 
     private class VarField {
@@ -96,10 +141,10 @@ public class NewWizardModular extends JFrame {
                     return ((JSpinner) cmp).getValue();
                 case PROVINCE_FK:
                     return ((JProvinceButton) cmp).getFK();
-                case CLAN_FK:
-                    return parseKey(((JComboBox) cmp));
-                default:
+                case VARCHAR:
                     return ((JTextField) cmp).getText();
+                default:
+                    return parseKey(((JComboBox) cmp));
             }
         }
     }
@@ -144,13 +189,13 @@ public class NewWizardModular extends JFrame {
         return out;
     }
 
-    public static void generateWizard(BaseDialog bdm, String name, ArrayList<DBVariable> vars, String tableName, boolean firstid) {
-        NewWizardModular nw = new NewWizardModular(name, vars, tableName, firstid);
+    public static void generateWizard(BaseDialog bdm, String name, ArrayList<DBVariable> vars, String tableName, String[] columns, boolean firstid) {
+        NewWizardModular nw = new NewWizardModular(name, vars, tableName, columns, firstid);
         nw.addOk(bdm);
     }
 
-    public static void generateWizard(BaseDialog bdm, Object[] stval, String name, ArrayList<DBVariable> vars, String tableName, boolean firstid) {
-        NewWizardModular nw = new NewWizardModular(name, vars, tableName, firstid);
+    public static void generateWizard(BaseDialog bdm, Object[] stval, String name, ArrayList<DBVariable> vars, String tableName,  String[] columns, boolean firstid) {
+        NewWizardModular nw = new NewWizardModular(name, vars, tableName, columns, firstid);
         for (int i = 0; i < stval.length; ++i) {
             nw.setVarVal(i, stval[i]);
         }
@@ -176,6 +221,7 @@ public class NewWizardModular extends JFrame {
                         query.executeUpdate();
                         MainManager.getEM().getTransaction().commit();
                         bd.remodel();
+                        MainManager.reeditor();
                     }
                 }
         );

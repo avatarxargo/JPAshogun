@@ -6,9 +6,7 @@
 package manager.persistence;
 
 import java.io.Serializable;
-import java.util.Collection;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -18,10 +16,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+import manager.persistence.Building;
+import manager.persistence.Province;
+import manager.persistence.Simday;
 
 /**
  *
@@ -33,7 +32,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "TransactionBuild.findAll", query = "SELECT t FROM TransactionBuild t"),
     @NamedQuery(name = "TransactionBuild.findByIdTransactionBuild", query = "SELECT t FROM TransactionBuild t WHERE t.idTransactionBuild = :idTransactionBuild"),
-    @NamedQuery(name = "TransactionBuild.findByCount", query = "SELECT t FROM TransactionBuild t WHERE t.count = :count")})
+    @NamedQuery(name = "TransactionBuild.findByCountBuildings", query = "SELECT t FROM TransactionBuild t WHERE t.countBuildings = :countBuildings")})
 public class TransactionBuild implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -42,16 +41,17 @@ public class TransactionBuild implements Serializable {
     @Column(name = "id_transaction_build")
     private Integer idTransactionBuild;
     @Basic(optional = false)
-    @Column(name = "count")
-    private int count;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "transactionBuildIdTransactionBuild")
-    private Collection<Transactions> transactionsCollection;
-    @JoinColumn(name = "building_id_building", referencedColumnName = "id_building")
+    @Column(name = "count_buildings")
+    private int countBuildings;
+    @JoinColumn(name = "building_type_id", referencedColumnName = "id_building")
     @ManyToOne(optional = false)
-    private Building buildingIdBuilding;
-    @JoinColumn(name = "province_id_province", referencedColumnName = "id_province")
+    private Building buildingTypeId;
+    @JoinColumn(name = "province_id", referencedColumnName = "id_province")
     @ManyToOne(optional = false)
-    private Province provinceIdProvince;
+    private Province provinceId;
+    @JoinColumn(name = "simday_number", referencedColumnName = "id_simday")
+    @ManyToOne(optional = false)
+    private Simday simdayNumber;
 
     public TransactionBuild() {
     }
@@ -60,9 +60,9 @@ public class TransactionBuild implements Serializable {
         this.idTransactionBuild = idTransactionBuild;
     }
 
-    public TransactionBuild(Integer idTransactionBuild, int count) {
+    public TransactionBuild(Integer idTransactionBuild, int countBuildings) {
         this.idTransactionBuild = idTransactionBuild;
-        this.count = count;
+        this.countBuildings = countBuildings;
     }
 
     public Integer getIdTransactionBuild() {
@@ -73,37 +73,36 @@ public class TransactionBuild implements Serializable {
         this.idTransactionBuild = idTransactionBuild;
     }
 
-    public int getCount() {
-        return count;
+    public int getCountBuildings() {
+        return countBuildings;
     }
 
-    public void setCount(int count) {
-        this.count = count;
+    public void setCountBuildings(int countBuildings) {
+        this.countBuildings = countBuildings;
     }
 
-    @XmlTransient
-    public Collection<Transactions> getTransactionsCollection() {
-        return transactionsCollection;
+    public Building getBuildingTypeId() {
+        return buildingTypeId;
     }
 
-    public void setTransactionsCollection(Collection<Transactions> transactionsCollection) {
-        this.transactionsCollection = transactionsCollection;
+    public void setBuildingTypeId(Building buildingTypeId) {
+        this.buildingTypeId = buildingTypeId;
     }
 
-    public Building getBuildingIdBuilding() {
-        return buildingIdBuilding;
+    public Province getProvinceId() {
+        return provinceId;
     }
 
-    public void setBuildingIdBuilding(Building buildingIdBuilding) {
-        this.buildingIdBuilding = buildingIdBuilding;
+    public void setProvinceId(Province provinceId) {
+        this.provinceId = provinceId;
     }
 
-    public Province getProvinceIdProvince() {
-        return provinceIdProvince;
+    public Simday getSimdayNumber() {
+        return simdayNumber;
     }
 
-    public void setProvinceIdProvince(Province provinceIdProvince) {
-        this.provinceIdProvince = provinceIdProvince;
+    public void setSimdayNumber(Simday simdayNumber) {
+        this.simdayNumber = simdayNumber;
     }
 
     @Override
@@ -128,7 +127,7 @@ public class TransactionBuild implements Serializable {
 
     @Override
     public String toString() {
-        return "manager.persistence.TransactionBuild[ idTransactionBuild=" + idTransactionBuild + " ]";
+        return "manager.dialog.TransactionBuild[ idTransactionBuild=" + idTransactionBuild + " ]";
     }
     
 }

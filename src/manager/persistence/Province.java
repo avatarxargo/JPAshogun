@@ -33,10 +33,12 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "Province.findAll", query = "SELECT p FROM Province p"),
     @NamedQuery(name = "Province.findByIdProvince", query = "SELECT p FROM Province p WHERE p.idProvince = :idProvince"),
-    @NamedQuery(name = "Province.findByArmyUnits", query = "SELECT p FROM Province p WHERE p.armyUnits = :armyUnits"),
+    @NamedQuery(name = "Province.findByNameProvince", query = "SELECT p FROM Province p WHERE p.nameProvince = :nameProvince"),
     @NamedQuery(name = "Province.findByX", query = "SELECT p FROM Province p WHERE p.x = :x"),
     @NamedQuery(name = "Province.findByY", query = "SELECT p FROM Province p WHERE p.y = :y"),
-    @NamedQuery(name = "Province.findByProvinceName", query = "SELECT p FROM Province p WHERE p.provinceName = :provinceName")})
+    @NamedQuery(name = "Province.findByArmyUnits", query = "SELECT p FROM Province p WHERE p.armyUnits = :armyUnits"),
+    @NamedQuery(name = "Province.findByCostOneArmyUnitValue", query = "SELECT p FROM Province p WHERE p.costOneArmyUnitValue = :costOneArmyUnitValue"),
+    @NamedQuery(name = "Province.findByCostOneArmyUnitResourceId", query = "SELECT p FROM Province p WHERE p.costOneArmyUnitResourceId = :costOneArmyUnitResourceId")})
 public class Province implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -45,8 +47,8 @@ public class Province implements Serializable {
     @Column(name = "id_province")
     private Integer idProvince;
     @Basic(optional = false)
-    @Column(name = "army_units")
-    private int armyUnits;
+    @Column(name = "name_province")
+    private String nameProvince;
     @Basic(optional = false)
     @Column(name = "x")
     private int x;
@@ -54,17 +56,33 @@ public class Province implements Serializable {
     @Column(name = "y")
     private int y;
     @Basic(optional = false)
-    @Column(name = "province_name")
-    private String provinceName;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "provinceIdProvince")
+    @Column(name = "army_units")
+    private int armyUnits;
+    @Basic(optional = false)
+    @Column(name = "cost_one_army_unit_value")
+    private int costOneArmyUnitValue;
+    @Basic(optional = false)
+    @Column(name = "cost_one_army_unit_resource_id")
+    private int costOneArmyUnitResourceId;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "provinceFromId")
     private Collection<TransactionMove> transactionMoveCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "provinceIdProvince")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "provinceToId")
+    private Collection<TransactionMove> transactionMoveCollection1;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "firstProvinceId")
+    private Collection<Neighbour> neighbourCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "secondProvinceId")
+    private Collection<Neighbour> neighbourCollection1;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "provinceId")
     private Collection<TransactionTrain> transactionTrainCollection;
-    @JoinColumn(name = "clan_id_clan", referencedColumnName = "id_clan")
+    @JoinColumn(name = "clan_control_id", referencedColumnName = "id_clan")
     @ManyToOne
-    private Clan clanIdClan;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "provinceIdProvince")
+    private Clan clanControlId;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "provinceId")
     private Collection<TransactionBuild> transactionBuildCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "provinceId")
+    private Collection<OwnedBuildings> ownedBuildingsCollection;
+    @OneToMany(mappedBy = "provinceId")
+    private Collection<Simday> simdayCollection;
 
     public Province() {
     }
@@ -73,12 +91,14 @@ public class Province implements Serializable {
         this.idProvince = idProvince;
     }
 
-    public Province(Integer idProvince, int armyUnits, int x, int y, String provinceName) {
+    public Province(Integer idProvince, String nameProvince, int x, int y, int armyUnits, int costOneArmyUnitValue, int costOneArmyUnitResourceId) {
         this.idProvince = idProvince;
-        this.armyUnits = armyUnits;
+        this.nameProvince = nameProvince;
         this.x = x;
         this.y = y;
-        this.provinceName = provinceName;
+        this.armyUnits = armyUnits;
+        this.costOneArmyUnitValue = costOneArmyUnitValue;
+        this.costOneArmyUnitResourceId = costOneArmyUnitResourceId;
     }
 
     public Integer getIdProvince() {
@@ -89,12 +109,12 @@ public class Province implements Serializable {
         this.idProvince = idProvince;
     }
 
-    public int getArmyUnits() {
-        return armyUnits;
+    public String getNameProvince() {
+        return nameProvince;
     }
 
-    public void setArmyUnits(int armyUnits) {
-        this.armyUnits = armyUnits;
+    public void setNameProvince(String nameProvince) {
+        this.nameProvince = nameProvince;
     }
 
     public int getX() {
@@ -113,12 +133,28 @@ public class Province implements Serializable {
         this.y = y;
     }
 
-    public String getProvinceName() {
-        return provinceName;
+    public int getArmyUnits() {
+        return armyUnits;
     }
 
-    public void setProvinceName(String provinceName) {
-        this.provinceName = provinceName;
+    public void setArmyUnits(int armyUnits) {
+        this.armyUnits = armyUnits;
+    }
+
+    public int getCostOneArmyUnitValue() {
+        return costOneArmyUnitValue;
+    }
+
+    public void setCostOneArmyUnitValue(int costOneArmyUnitValue) {
+        this.costOneArmyUnitValue = costOneArmyUnitValue;
+    }
+
+    public int getCostOneArmyUnitResourceId() {
+        return costOneArmyUnitResourceId;
+    }
+
+    public void setCostOneArmyUnitResourceId(int costOneArmyUnitResourceId) {
+        this.costOneArmyUnitResourceId = costOneArmyUnitResourceId;
     }
 
     @XmlTransient
@@ -131,6 +167,33 @@ public class Province implements Serializable {
     }
 
     @XmlTransient
+    public Collection<TransactionMove> getTransactionMoveCollection1() {
+        return transactionMoveCollection1;
+    }
+
+    public void setTransactionMoveCollection1(Collection<TransactionMove> transactionMoveCollection1) {
+        this.transactionMoveCollection1 = transactionMoveCollection1;
+    }
+
+    @XmlTransient
+    public Collection<Neighbour> getNeighbourCollection() {
+        return neighbourCollection;
+    }
+
+    public void setNeighbourCollection(Collection<Neighbour> neighbourCollection) {
+        this.neighbourCollection = neighbourCollection;
+    }
+
+    @XmlTransient
+    public Collection<Neighbour> getNeighbourCollection1() {
+        return neighbourCollection1;
+    }
+
+    public void setNeighbourCollection1(Collection<Neighbour> neighbourCollection1) {
+        this.neighbourCollection1 = neighbourCollection1;
+    }
+
+    @XmlTransient
     public Collection<TransactionTrain> getTransactionTrainCollection() {
         return transactionTrainCollection;
     }
@@ -139,12 +202,12 @@ public class Province implements Serializable {
         this.transactionTrainCollection = transactionTrainCollection;
     }
 
-    public Clan getClanIdClan() {
-        return clanIdClan;
+    public Clan getClanControlId() {
+        return clanControlId;
     }
 
-    public void setClanIdClan(Clan clanIdClan) {
-        this.clanIdClan = clanIdClan;
+    public void setClanControlId(Clan clanControlId) {
+        this.clanControlId = clanControlId;
     }
 
     @XmlTransient
@@ -154,6 +217,24 @@ public class Province implements Serializable {
 
     public void setTransactionBuildCollection(Collection<TransactionBuild> transactionBuildCollection) {
         this.transactionBuildCollection = transactionBuildCollection;
+    }
+
+    @XmlTransient
+    public Collection<OwnedBuildings> getOwnedBuildingsCollection() {
+        return ownedBuildingsCollection;
+    }
+
+    public void setOwnedBuildingsCollection(Collection<OwnedBuildings> ownedBuildingsCollection) {
+        this.ownedBuildingsCollection = ownedBuildingsCollection;
+    }
+
+    @XmlTransient
+    public Collection<Simday> getSimdayCollection() {
+        return simdayCollection;
+    }
+
+    public void setSimdayCollection(Collection<Simday> simdayCollection) {
+        this.simdayCollection = simdayCollection;
     }
 
     @Override

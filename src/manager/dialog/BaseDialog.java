@@ -19,6 +19,7 @@ import javax.swing.JTable;
 import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
+import manager.window.MainManager;
 import manager.window.TransactionPopUp;
 
 /**
@@ -88,6 +89,7 @@ public class BaseDialog extends JFrame {
 				{
 						public void actionPerformed(ActionEvent arg0) {
                                                     me.remodel();
+                                                    MainManager.reeditor();
 						}
 				}
 		);
@@ -114,6 +116,7 @@ public class BaseDialog extends JFrame {
                                                         table.setRowSelectionInterval(index, index);
                                                         break;
                                                     } else {index--;}}
+                                                    MainManager.reeditor();
 						}
 				}
 		);

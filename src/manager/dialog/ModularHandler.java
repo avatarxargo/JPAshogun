@@ -1,5 +1,8 @@
 package manager.dialog;
 
+import manager.persistence.TransactionBuild;
+import manager.persistence.TransactionMove;
+import manager.persistence.TransactionTrain;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -7,7 +10,11 @@ import javax.persistence.Query;
 import javax.swing.DefaultListModel;
 import javax.swing.JComboBox;
 import manager.dialog.DBVariable.DBVarType;
+import manager.persistence.Building;
+import manager.persistence.Clan;
+import manager.persistence.PlayerType;
 import manager.persistence.Province;
+import manager.persistence.Resource;
 import manager.persistence.pulled.ProvinceLocal;
 import manager.window.MainManager;
 
@@ -116,6 +123,9 @@ public class ModularHandler implements TableHandler {
             int index = 0;
             for (Iterator<Object[]> itN = listN.iterator(); itN.hasNext();) {
                 Object[] obj = itN.next();
+                for(int j=0; j<obj.length; ++j) {
+                    obj[j] = DBVariable.parseValue(obj[j],tableVar.get(j).type);
+                }
                 data[index++] = obj;
             }
             //set the model
@@ -126,6 +136,7 @@ public class ModularHandler implements TableHandler {
             int index = 0;
             for (Iterator<Object[]> itN = listN.iterator(); itN.hasNext();) {
                 Object obj = itN.next();
+                obj = DBVariable.parseValue(obj,tableVar.get(0).type);
                 data[index++][0] = obj;
             }
             //set the model
@@ -136,12 +147,12 @@ public class ModularHandler implements TableHandler {
 
     @Override
     public void newWizard(BaseDialog bd) {
-        NewWizardModular.generateWizard(bd, "new "+displayTableName, tableVar, tableName, firstid);
+        NewWizardModular.generateWizard(bd, "New "+displayTableName, tableVar, tableName, getColumnNames(), firstid);
     }
     
     @Override
     public void newWizard(BaseDialog bd, Object[] stval) {
-        NewWizardModular.generateWizard(bd, stval, "new "+displayTableName, tableVar, tableName, firstid);
+        NewWizardModular.generateWizard(bd, stval, "New "+displayTableName, tableVar, tableName, getColumnNames(), firstid);
     }
 
     @Override

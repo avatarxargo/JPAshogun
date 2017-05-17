@@ -6,9 +6,7 @@
 package manager.persistence;
 
 import java.io.Serializable;
-import java.util.Collection;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -18,10 +16,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+import manager.persistence.Province;
+import manager.persistence.Simday;
 
 /**
  *
@@ -43,11 +41,15 @@ public class TransactionMove implements Serializable {
     private Integer idTransactionMove;
     @Column(name = "army_units")
     private Integer armyUnits;
-    @JoinColumn(name = "province_id_province", referencedColumnName = "id_province")
+    @JoinColumn(name = "province_from_id", referencedColumnName = "id_province")
     @ManyToOne(optional = false)
-    private Province provinceIdProvince;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "transactionMoveIdTransactionMove")
-    private Collection<Transactions> transactionsCollection;
+    private Province provinceFromId;
+    @JoinColumn(name = "province_to_id", referencedColumnName = "id_province")
+    @ManyToOne(optional = false)
+    private Province provinceToId;
+    @JoinColumn(name = "simday_number", referencedColumnName = "id_simday")
+    @ManyToOne(optional = false)
+    private Simday simdayNumber;
 
     public TransactionMove() {
     }
@@ -72,21 +74,28 @@ public class TransactionMove implements Serializable {
         this.armyUnits = armyUnits;
     }
 
-    public Province getProvinceIdProvince() {
-        return provinceIdProvince;
+    public Province getProvinceFromId() {
+        return provinceFromId;
     }
 
-    public void setProvinceIdProvince(Province provinceIdProvince) {
-        this.provinceIdProvince = provinceIdProvince;
+    public void setProvinceFromId(Province provinceFromId) {
+        this.provinceFromId = provinceFromId;
     }
 
-    @XmlTransient
-    public Collection<Transactions> getTransactionsCollection() {
-        return transactionsCollection;
+    public Province getProvinceToId() {
+        return provinceToId;
     }
 
-    public void setTransactionsCollection(Collection<Transactions> transactionsCollection) {
-        this.transactionsCollection = transactionsCollection;
+    public void setProvinceToId(Province provinceToId) {
+        this.provinceToId = provinceToId;
+    }
+
+    public Simday getSimdayNumber() {
+        return simdayNumber;
+    }
+
+    public void setSimdayNumber(Simday simdayNumber) {
+        this.simdayNumber = simdayNumber;
     }
 
     @Override
@@ -111,7 +120,7 @@ public class TransactionMove implements Serializable {
 
     @Override
     public String toString() {
-        return "manager.persistence.TransactionMove[ idTransactionMove=" + idTransactionMove + " ]";
+        return "manager.dialog.TransactionMove[ idTransactionMove=" + idTransactionMove + " ]";
     }
     
 }

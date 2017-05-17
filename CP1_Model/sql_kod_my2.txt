@@ -1,0 +1,191 @@
+CREATE TABLE player_type (
+  id_player_type              SERIAL PRIMARY KEY NOT NULL,
+  type_name            VARCHAR(100) NOT NULL,
+  CONSTRAINT unique_type_name UNIQUE (type_name)
+);
+  
+CREATE TABLE clan (
+  id_clan              SERIAL PRIMARY KEY NOT NULL,
+  name_clan            VARCHAR(100) NOT NULL,
+  CONSTRAINT unique_name_clan UNIQUE (name_clan)
+);
+  
+CREATE TABLE player (
+    id_player serial NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    login VARCHAR(100) NOT NULL,
+	password VARCHAR(100) NOT NULL,
+    player_type_id integer NOT NULL,
+    clan_id integer,
+	PRIMARY KEY (id_player),
+	CONSTRAINT unique_login UNIQUE (login),
+    CONSTRAINT "player_type_id_FK" FOREIGN KEY (player_type_id)
+        REFERENCES player_type (id_player_type) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+	CONSTRAINT "clan_id_FK" FOREIGN KEY (clan_id)
+		REFERENCES clan (id_clan) MATCH SIMPLE
+		ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+);
+  
+CREATE TABLE resource (
+  id_resource          SERIAL PRIMARY KEY NOT NULL,
+  name_resource            VARCHAR(100) NOT NULL,
+  CONSTRAINT unique_name_resource UNIQUE (name_resource)
+);
+
+CREATE TABLE owned_resource (
+    id_owned_resources serial NOT NULL,
+	resource_id integer NOT NULL,
+	amount_resources integer NOT NULL,
+	clan_id integer NOT NULL,
+	PRIMARY KEY (id_owned_resources),
+	CONSTRAINT unique_resource_clan UNIQUE (resource_id, clan_id),
+    CONSTRAINT "resource_id_FK" FOREIGN KEY (resource_id)
+        REFERENCES resource (id_resource) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+	CONSTRAINT "clan_id_FK" FOREIGN KEY (clan_id)
+		REFERENCES clan (id_clan) MATCH SIMPLE
+		ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+);
+
+CREATE TABLE building (
+    id_building serial NOT NULL,
+	name_building varchar(100) NOT NULL,
+	cost_value integer NOT NULL,
+	cost_resource_id integer NOT NULL,
+	PRIMARY KEY (id_building),
+	CONSTRAINT unique_name_building UNIQUE (name_building),
+    CONSTRAINT "cost_resource_id_FK" FOREIGN KEY (cost_resource_id)
+        REFERENCES resource (id_resource) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+);
+
+CREATE TABLE province (
+    id_province serial NOT NULL,
+	name_province varchar(100) NOT NULL,
+	x integer NOT NULL,
+	y integer NOT NULL,
+	clan_control_id integer DEFAULT NULL,
+	army_units integer NOT NULL DEFAULT 0,
+	cost_one_army_unit_value integer NOT NULL DEFAULT 1,
+	cost_one_army_unit_resource_id integer NOT NULL,
+	PRIMARY KEY (id_province),
+	CONSTRAINT unique_name_province UNIQUE (name_province),
+    CONSTRAINT "clan_control_id_FK" FOREIGN KEY (clan_control_id)
+        REFERENCES clan (id_clan) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+);
+
+CREATE TABLE owned_buildings (
+    id_owned_buildings serial NOT NULL,
+	province_id integer NOT NULL,
+	building_id integer NOT NULL,
+	amount_buildings integer NOT NULL DEFAULT 0,
+	PRIMARY KEY (id_owned_buildings),
+	CONSTRAINT unique_province_building UNIQUE (province_id, building_id),
+	CONSTRAINT "province_id_FK" FOREIGN KEY (province_id)
+		REFERENCES province (id_province) MATCH SIMPLE
+		ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+	CONSTRAINT "building_id_FK" FOREIGN KEY (building_id)
+		REFERENCES building (id_building) MATCH SIMPLE
+		ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+);
+
+CREATE TABLE neighbour (
+	id_neighbour serial NOT NULL,
+	first_province_id integer NOT NULL,
+    second_province_id integer NOT NULL,
+	PRIMARY KEY (id_neighbour),
+    CONSTRAINT unique_neighbour UNIQUE (first_province_id, second_province_id),
+    CONSTRAINT "first_province_id_FK" FOREIGN KEY (first_province_id)
+        REFERENCES province (id_province) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT "second_province_id_FK" FOREIGN KEY (second_province_id)
+        REFERENCES province (id_province) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+);
+
+CREATE TABLE simday (
+	id_simday serial NOT NULL,
+	day_number integer NOT NULL,
+	clan_id integer NOT NULL,
+	province_id integer DEFAULT NULL,
+	PRIMARY KEY (id_simday),
+    CONSTRAINT unique_day_clan_province UNIQUE (day_number, clan_id, province_id),
+    CONSTRAINT "clan_id_FK" FOREIGN KEY (clan_id)
+        REFERENCES clan (id_clan) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT "province_id_FK" FOREIGN KEY (province_id)
+        REFERENCES province (id_province) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+);
+
+CREATE TABLE transaction_move (
+	id_transaction_move serial NOT NULL,
+	simday_number integer NOT NULL,
+	province_from_id integer NOT NULL,
+	province_to_id integer NOT NULL,
+	army_units integer NULL,
+	PRIMARY KEY (id_transaction_move),
+	CONSTRAINT "province_from_id_FK" FOREIGN KEY (province_from_id)
+        REFERENCES province (id_province) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+	CONSTRAINT "simday_number_FK" FOREIGN KEY (simday_number)
+        REFERENCES simday (id_simday) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    	CONSTRAINT "province_to_id_FK" FOREIGN KEY (province_to_id)
+        REFERENCES province (id_province) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+);
+
+CREATE TABLE transaction_train (
+	id_transaction_train serial NOT NULL,
+	simday_number integer NOT NULL,
+	province_id integer NOT NULL,
+	count_army integer NOT NULL DEFAULT 1,
+	PRIMARY KEY (id_transaction_train),
+	CONSTRAINT "simday_number_FK" FOREIGN KEY (simday_number)
+        REFERENCES simday (id_simday) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+	CONSTRAINT "province_id_FK" FOREIGN KEY (province_id)
+        REFERENCES province (id_province) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+);
+
+CREATE TABLE transaction_build (
+	id_transaction_build serial NOT NULL,
+	simday_number integer NOT NULL,
+	province_id integer NOT NULL,
+	building_type_id integer NOT NULL,
+	count_buildings integer NOT NULL DEFAULT 1,
+	PRIMARY KEY (id_transaction_build),
+	CONSTRAINT "province_id_FK" FOREIGN KEY (province_id)
+        REFERENCES province (id_province) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+	CONSTRAINT "simday_number_FK" FOREIGN KEY (simday_number)
+        REFERENCES simday (id_simday) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+	CONSTRAINT "building_type_id_FK" FOREIGN KEY (building_type_id)
+		REFERENCES building (id_building) MATCH SIMPLE
+		ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+);

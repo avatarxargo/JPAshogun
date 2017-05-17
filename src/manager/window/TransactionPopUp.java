@@ -99,7 +99,7 @@ public class TransactionPopUp extends JFrame{
 						    ImageIcon iconsetmap = new ImageIcon(this.getClass().getResource("/flagmap.png"));
 							map.setIconImage(iconsetmap.getImage());
 							map.setDefaultCloseOperation(HIDE_ON_CLOSE);	
-							map.passTarget(me);
+							//map.passTarget(me);
 						}
 				}
 		);

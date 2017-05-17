@@ -5,23 +5,27 @@
     <class>manager.persistence.Building</class>
     <class>manager.persistence.Clan</class>
     <class>manager.persistence.Neighbour</class>
+    <class>manager.persistence.OwnedBuildings</class>
+    <class>manager.persistence.OwnedResource</class>
     <class>manager.persistence.Player</class>
     <class>manager.persistence.PlayerType</class>
     <class>manager.persistence.Province</class>
+    <class>manager.persistence.Provincelocal</class>
+    <class>manager.persistence.Provinceneighborslocal</class>
     <class>manager.persistence.Resource</class>
     <class>manager.persistence.Resources</class>
+    <class>manager.persistence.Sequence</class>
     <class>manager.persistence.Simday</class>
     <class>manager.persistence.TransactionBuild</class>
     <class>manager.persistence.TransactionMove</class>
     <class>manager.persistence.TransactionTrain</class>
-    <class>manager.persistence.Transactions</class>
     <class>manager.persistence.pulled.ProvinceLocal</class>
     <class>manager.persistence.pulled.ProvinceNeighborsLocal</class>
     <properties>
-      <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://slon.felk.cvut.cz:5432/student_db17_40"/>
-      <property name="javax.persistence.jdbc.user" value="student_db17_40"/>
+      <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/postgres"/>
+      <property name="javax.persistence.jdbc.user" value="postgres"/>
       <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
-      <property name="javax.persistence.jdbc.password" value="1234"/>
+      <property name="javax.persistence.jdbc.password" value="))))"/>
       <property name="javax.persistence.schema-generation.database.action" value="create"/>
     </properties>
   </persistence-unit>

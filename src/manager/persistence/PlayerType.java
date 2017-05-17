@@ -42,7 +42,7 @@ public class PlayerType implements Serializable {
     @Basic(optional = false)
     @Column(name = "type_name")
     private String typeName;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "playerTypeIdPlayerType")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "playerTypeId")
     private Collection<Player> playerCollection;
 
     public PlayerType() {
