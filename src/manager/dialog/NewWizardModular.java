@@ -80,7 +80,9 @@ public class NewWizardModular extends JFrame {
                     vf.cmp = jcb4;
                     break;
                 case SIMDAY_NUMBER:
-                    //TODO
+                    JComboBox jcb8 = MainManager.mhday.getComboBox();
+                    add(frame(columnNames[i],jcb8));
+                    vf.cmp = jcb8;
                     break;
                 case TRANSACTION_BUILD_FK:
                     JComboBox jcb5 = MainManager.mhtranb.getComboBox();
@@ -211,6 +213,7 @@ public class NewWizardModular extends JFrame {
         ok.addActionListener(
                 new ActionListener() {
                     public void actionPerformed(ActionEvent arg0) {
+                        if(!MainManager.inited) {return;}
                         Query query = MainManager.getEM().createNativeQuery(getQuerryCall());
                         System.out.println(getQuerryCall());
                         for (int i = 0; i < field.size(); ++i) {

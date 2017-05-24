@@ -5,6 +5,7 @@ import manager.persistence.Clan;
 import manager.persistence.PlayerType;
 import manager.persistence.Province;
 import manager.persistence.Resource;
+import manager.persistence.Simday;
 import manager.persistence.TransactionBuild;
 import manager.persistence.TransactionMove;
 import manager.persistence.TransactionTrain;
@@ -53,7 +54,9 @@ public class DBVariable {
             case TRANSACTION_MOVE_FK:
                 TransactionMove tm = MainManager.getEM().find(TransactionMove.class, obj);
                 return tm.getArmyUnits()+"x from "+tm.getProvinceFromId().getNameProvince()+" to "+tm.getProvinceToId().getNameProvince();
-            
+            case SIMDAY_NUMBER:
+                Simday sd = MainManager.getEM().find(Simday.class, obj);
+                return sd.getDayNumber();
             default:
                 return obj;
                 

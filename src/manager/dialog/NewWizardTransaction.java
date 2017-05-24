@@ -116,12 +116,11 @@ public class NewWizardTransaction extends javax.swing.JFrame {
 
     private void insertBuild() {
         dbstatus.setText("building " + buildcombo.getSelectedItem().toString() + " tiems " + buildspin.getValue());
-        String transQ = "INSERT INTO transaction_build (simday_number,province_id,building_type_id,count_buildings) VALUES (?,?,?,?);";
+        String transQ = "INSERT INTO transaction_build (simday_number,province_id,building_type_id,count_buildings) VALUES (current_day(),?,?,?);";
         Query q = MainManager.getEM().createNativeQuery(transQ);
-        q.setParameter(1, 1);
-        q.setParameter(2, prov.getIdProvince());
-        q.setParameter(3, buildcombo.getId(buildcombo.getSelectedIndex()));
-        q.setParameter(4, buildspin.getValue());
+        q.setParameter(1, prov.getIdProvince());
+        q.setParameter(2, buildcombo.getId(buildcombo.getSelectedIndex()));
+        q.setParameter(3, buildspin.getValue());
         MainManager.getEM().getTransaction().begin();
         q.executeUpdate();
         MainManager.getEM().getTransaction().commit();
@@ -130,11 +129,10 @@ public class NewWizardTransaction extends javax.swing.JFrame {
 
     private void insertTrain() {
         dbstatus.setText("training " + trainspin.getValue() + " troops");
-        String transQ = "INSERT INTO transaction_train (simday_number,province_id,count_army) VALUES (?,?,?);";
+        String transQ = "INSERT INTO transaction_train (simday_number,province_id,count_army) VALUES (current_day(),?,?);";
         Query q = MainManager.getEM().createNativeQuery(transQ);
-        q.setParameter(1, 1);
-        q.setParameter(2, prov.getIdProvince());
-        q.setParameter(3, trainspin.getValue());
+        q.setParameter(1, prov.getIdProvince());
+        q.setParameter(2, trainspin.getValue());
         MainManager.getEM().getTransaction().begin();
         q.executeUpdate();
         MainManager.getEM().getTransaction().commit();
@@ -142,10 +140,17 @@ public class NewWizardTransaction extends javax.swing.JFrame {
     }
 
     private void insertMove() {
+        if(movprov.getText().equals(" << Select Province >> ")) {
+            dbstatus.setText("Please select a target province.");
+            return;}
+        if(!isn()) {
+            dbstatus.setText("Please select a neighbouring province.");
+            return;
+        }
         dbstatus.setText("moving " + movspin.getValue() + " troops to " + movprov.getText() + ".");
-        String transQ = "INSERT INTO transaction_move (simday_number,province_from_id,province_to_id,army_units) VALUES (?,?,?,?);";
+        String transQ = "INSERT INTO transaction_move (simday_number,clan_issue_id,province_from_id,province_to_id,army_units) VALUES (current_day(),?,?,?,?);";
         Query q = MainManager.getEM().createNativeQuery(transQ);
-        q.setParameter(1, 1);
+        q.setParameter(1, prov.getClanControlId().getIdClan());
         q.setParameter(2, prov.getIdProvince());
         q.setParameter(3, movprov.getFK());
         q.setParameter(4, movspin.getValue());
@@ -153,6 +158,15 @@ public class NewWizardTransaction extends javax.swing.JFrame {
         q.executeUpdate();
         MainManager.getEM().getTransaction().commit();
         pi.refresh();
+    }
+    
+    private boolean isn() {
+        Query q = MainManager.getEM().createNativeQuery(
+        "SELECT is_neighbour(?,?)");
+        q.setParameter(1, prov.getIdProvince());
+        q.setParameter(2, movprov.getFK());
+        Object o = q.getResultList().get(0);
+        return (Boolean) o;
     }
 
     /**

@@ -8,6 +8,89 @@ clan_id = cid), 0);
 $$
 LANGUAGE SQL IMMUTABLE STRICT;
 
+
+
+CREATE OR REPLACE FUNCTION get_prov_army(pid int)
+RETURNS int
+AS
+$$
+select army_units from province where id_province = pid;
+$$
+LANGUAGE SQL IMMUTABLE STRICT;
+
+CREATE OR REPLACE FUNCTION is_neighbour(pid1 int, pid2 int)
+RETURNS boolean
+AS
+$$
+select EXISTS (SELECT * from neighbour WHERE (first_province_id=pid1 AND second_province_id=pid2) OR (first_province_id=pid2 AND second_province_id=pid1));
+$$
+LANGUAGE SQL IMMUTABLE STRICT;
+
+CREATE OR REPLACE FUNCTION trg_neighbour()
+RETURNS trigger AS
+$function$
+BEGIN
+	IF (is_neighbour(NEW."province_from_id", NEW."province_to_id")) THEN
+		RETURN NEW;
+	ELSE
+		RETURN OLD;
+	END IF;
+END;
+$function$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION add_prov_army(pid int, amount int)
+RETURNS void
+VOLATILE
+PARALLEL UNSAFE
+AS
+$$
+update province set army_units=get_prov_army(pid)+amount where id_province = pid;
+$$
+LANGUAGE SQL STRICT;
+
+CREATE OR REPLACE FUNCTION set_prov_owner(pid int, owner int)
+RETURNS void
+VOLATILE
+PARALLEL UNSAFE
+AS
+$$
+update province set clan_control_id=owner where id_province = pid;
+$$
+LANGUAGE SQL STRICT;
+
+
+CREATE OR REPLACE FUNCTION get_trm_prov1(tid int)
+RETURNS int
+AS
+$$
+select province_from_id from transaction_move where id_transaction_move = tid;
+$$
+LANGUAGE SQL IMMUTABLE STRICT;
+CREATE OR REPLACE FUNCTION get_trm_prov2(tid int)
+RETURNS int
+AS
+$$
+select province_to_id from transaction_move where id_transaction_move = tid;
+$$
+LANGUAGE SQL IMMUTABLE STRICT;
+CREATE OR REPLACE FUNCTION get_trm_amount(tid int)
+RETURNS int
+AS
+$$
+select army_units from transaction_move where id_transaction_move = tid;
+$$
+LANGUAGE SQL IMMUTABLE STRICT;
+
+CREATE OR REPLACE FUNCTION get_trm_issue(tid int)
+RETURNS int
+AS
+$$
+select clan_issue_id from transaction_move where id_transaction_move = tid;
+$$
+LANGUAGE SQL IMMUTABLE STRICT;
+
+
 CREATE OR REPLACE FUNCTION get_trb_prov(tid int)
 RETURNS int
 AS
@@ -33,7 +116,7 @@ $$
 LANGUAGE SQL IMMUTABLE STRICT;
 
 
-CREATE FUNCTION get_owner(pid int)
+CREATE OR REPLACE FUNCTION get_owner(pid int)
 RETURNS int
 AS
 $$
@@ -42,17 +125,42 @@ $$
 $$
 LANGUAGE SQL IMMUTABLE STRICT;
 
+CREATE OR REPLACE FUNCTION current_day()
+RETURNS int
+AS
+$$
+	select id_simday from simday WHERE day_number = (select max(day_number) from simday);
+$$
+LANGUAGE SQL IMMUTABLE STRICT;
+
+CREATE OR REPLACE FUNCTION day_id_to_num(sid int)
+RETURNS int
+AS
+$$
+	select day_number from simday where sid = id_simday;
+$$
+LANGUAGE SQL IMMUTABLE STRICT;
+
 
 CREATE OR REPLACE FUNCTION add_resource(cid integer,rid integer, amount int)
     RETURNS void
-    LANGUAGE 'sql'
+    LANGUAGE 'plpgsql'
     VOLATILE  STRICT
     PARALLEL UNSAFE
     COST 100.0
-AS $function$update owned_resource
-set amount_resources = (amount+(select amount_resources from owned_resource
-where clan_id = cid and resource_id = rid))
-where clan_id = cid and resource_id = rid
+AS $function$
+begin
+IF EXISTS (SELECT * FROM owned_resource WHERE clan_id = cid and resource_id = rid) THEN
+	update owned_resource
+	set amount_resources = (amount+(select amount_resources from owned_resource
+	where clan_id = cid and resource_id = rid))
+	where clan_id = cid and resource_id = rid;
+ELSE
+	INSERT INTO owned_resource (clan_id, resource_id, amount_resources) VALUES
+	(cid,rid,amount);
+END IF;
+RETURN;
+end;
 $function$;
 
 
@@ -91,10 +199,10 @@ army_units = army_units + (select count_army from transaction_train where id_tra
 where
 id_province = (select province_id from transaction_train where id_transaction_train = tid) and
 pay_resource(get_owner((select province_id from transaction_train where id_transaction_train = tid)),
-             (select cost_one_army_unit_resource_id from province where id_province = (select province_id from transaction_train where id_transaction_train = tid)),
+            (select cost_one_army_unit_resource_id from province where id_province = (select province_id from transaction_train where id_transaction_train = tid)),
             
-             (select count_army from transaction_train where id_transaction_train = tid)
-             *(select cost_one_army_unit_value from province where id_province = (select province_id from transaction_train where id_transaction_train = tid)))
+            (select count_army from transaction_train where id_transaction_train = tid)
+            *(select cost_one_army_unit_value from province where id_province = (select province_id from transaction_train where id_transaction_train = tid)))
 $function$;
 
 
@@ -120,4 +228,52 @@ pay_resource(get_owner((select province_id from transaction_build WHERE id_trans
 (select cost_resource_id from building where id_building = (select building_type_id from transaction_build WHERE id_transaction_build = tid)),
 (select cost_value from building where id_building = (select building_type_id from transaction_build WHERE id_transaction_build = tid)))
 AND NOT EXISTS (SELECT * FROM upsert)
+$function$;
+
+
+CREATE OR REPLACE FUNCTION evaluate_move(tid int)
+    RETURNS void
+    LANGUAGE 'plpgsql'
+    VOLATILE  STRICT
+    PARALLEL UNSAFE
+    COST 100.0
+AS $function$
+begin
+IF get_prov_army(get_trm_prov1(tid))>=get_trm_amount(tid) AND get_trm_issue(tid)=get_owner(get_trm_prov1(tid)) THEN
+	perform add_prov_army(get_trm_prov1(tid),-get_trm_amount(tid));
+	IF(get_owner(get_trm_prov2(tid))=get_trm_issue(tid)) THEN
+		--friendly
+		perform add_prov_army(get_trm_prov2(tid),get_trm_amount(tid));
+	ELSE
+		IF(get_prov_army(get_trm_prov2(tid))<get_trm_amount(tid)) THEN
+			--taken over
+			perform add_prov_army(get_trm_prov2(tid), get_trm_amount(tid)-get_prov_army(get_trm_prov2(tid)));
+			perform set_prov_owner(get_trm_prov2(tid),get_trm_issue(tid));
+		ELSE
+			perform add_prov_army(get_trm_prov2(tid),-get_trm_amount(tid));
+		END IF;
+	END IF;
+END IF;
+end;
+$function$;
+
+
+CREATE OR REPLACE FUNCTION get_building_cost_resource(bid int)
+    RETURNS int
+    LANGUAGE 'sql'
+    VOLATILE  STRICT
+    PARALLEL UNSAFE
+    COST 100.0
+AS $function$
+	SELECT cost_resource_id FROM building where id_building = bid;
+$function$;
+
+CREATE OR REPLACE FUNCTION get_building_cost_amount(bid int)
+    RETURNS int
+    LANGUAGE 'sql'
+    VOLATILE  STRICT
+    PARALLEL UNSAFE
+    COST 100.0
+AS $function$
+	SELECT cost_value FROM building where id_building = bid;
 $function$;

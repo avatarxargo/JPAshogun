@@ -127,6 +127,7 @@ CREATE TABLE transaction_move (
 	simday_number integer NOT NULL,
 	province_from_id integer NOT NULL,
 	province_to_id integer NOT NULL,
+	clan_issue_id integer NOT NULL,
 	army_units integer NULL,
 	PRIMARY KEY (id_transaction_move),
 	CONSTRAINT "province_from_id_FK" FOREIGN KEY (province_from_id)
@@ -140,8 +141,16 @@ CREATE TABLE transaction_move (
     	CONSTRAINT "province_to_id_FK" FOREIGN KEY (province_to_id)
         REFERENCES province (id_province) MATCH SIMPLE
         ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+	CONSTRAINT "clan_id_FK" FOREIGN KEY (clan_issue_id)
+		REFERENCES clan (id_clan) MATCH SIMPLE
+		ON UPDATE NO ACTION
         ON DELETE NO ACTION
 );
+
+CREATE TRIGGER dont_move_far BEFORE INSERT ON transaction_move
+	FOR EACH ROW EXECUTE PROCEDURE trg_neighbour();
+	
 
 CREATE TABLE transaction_train (
 	id_transaction_train serial NOT NULL,

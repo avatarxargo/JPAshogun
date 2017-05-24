@@ -88,6 +88,7 @@ public class ModularHandler implements TableHandler {
     
     /**Generates a dropdown combo box, that holds a menu of available options for this table with [id] at the start*/
     public JComboBox getComboBox() {
+        if(!MainManager.inited) {return new JComboBox();}
         Query query = MainManager.getEM().createNativeQuery(getQuerryCall());
         List<Object[]> listN = query.getResultList();
         String[] lines = new String[listN.size()];
@@ -110,6 +111,7 @@ public class ModularHandler implements TableHandler {
 
     @Override
     public void reloadSelect(BaseDialog bd) {
+        if(!MainManager.inited) {return;}
         //querry into database
         Query queryN = MainManager.getEM().createNativeQuery(getQuerryCall());
         List<Object[]> listN = queryN.getResultList();
@@ -166,6 +168,7 @@ public class ModularHandler implements TableHandler {
 
     @Override
     public void removeById(Object key, Object[] row) {
+        if(!MainManager.inited) {return;}
         if(classa!=null) {
             Object obj = MainManager.getEM().find(classa, (int) key);
             MainManager.getEM().getTransaction().begin();

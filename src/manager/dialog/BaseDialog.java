@@ -135,7 +135,7 @@ public class BaseDialog extends JFrame {
             listModel.addElement(s);
         }*/
         items = new JList();
-        table = new JTable(new Object[][]{{1,"hora",2,3},{2,"kutna",2,3}}, th.getColumnNames());
+        table = new JTable(new Object[][]{{"NOT CONNECTED TO DATABASE"}}, new Object[]{"0"});
         table.setCellSelectionEnabled(false);
         table.setColumnSelectionAllowed(false);
         table.setRowSelectionAllowed(true);
@@ -166,6 +166,7 @@ public class BaseDialog extends JFrame {
     }
     
     public void remodel() {
+        if(!MainManager.inited) {return;}
         th.reloadSelect(this);
         //items.setModel(listModel); 
     }

@@ -33,6 +33,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Clan.findByIdClan", query = "SELECT c FROM Clan c WHERE c.idClan = :idClan"),
     @NamedQuery(name = "Clan.findByNameClan", query = "SELECT c FROM Clan c WHERE c.nameClan = :nameClan")})
 public class Clan implements Serializable {
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "clanIssueId")
+    private Collection<TransactionMove> transactionMoveCollection;
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -127,6 +129,15 @@ public class Clan implements Serializable {
     @Override
     public String toString() {
         return "manager.persistence.Clan[ idClan=" + idClan + " ]";
+    }
+
+    @XmlTransient
+    public Collection<TransactionMove> getTransactionMoveCollection() {
+        return transactionMoveCollection;
+    }
+
+    public void setTransactionMoveCollection(Collection<TransactionMove> transactionMoveCollection) {
+        this.transactionMoveCollection = transactionMoveCollection;
     }
     
 }

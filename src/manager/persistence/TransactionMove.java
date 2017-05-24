@@ -39,6 +39,9 @@ public class TransactionMove implements Serializable {
     private Integer idTransactionMove;
     @Column(name = "army_units")
     private Integer armyUnits;
+    @JoinColumn(name = "clan_issue_id", referencedColumnName = "id_clan")
+    @ManyToOne(optional = false)
+    private Clan clanIssueId;
     @JoinColumn(name = "province_from_id", referencedColumnName = "id_province")
     @ManyToOne(optional = false)
     private Province provinceFromId;
@@ -70,6 +73,14 @@ public class TransactionMove implements Serializable {
 
     public void setArmyUnits(Integer armyUnits) {
         this.armyUnits = armyUnits;
+    }
+
+    public Clan getClanIssueId() {
+        return clanIssueId;
+    }
+
+    public void setClanIssueId(Clan clanIssueId) {
+        this.clanIssueId = clanIssueId;
     }
 
     public Province getProvinceFromId() {

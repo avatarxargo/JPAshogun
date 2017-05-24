@@ -7,9 +7,9 @@ id_transaction_move,simday_number, province_from_id, province_to_id, army_units,
 FROM transaction_move;
 
 CREATE VIEW transactions AS SELECT
-'build' AS type, simday_number as day, province_id as province1, CAST(null AS int) as province2, count_buildings as count, building_type_id as building
+'build' AS type, day_id_to_num(simday_number) as day, province_id as province1, CAST(null AS int) as province2, count_buildings as count, building_type_id as building
 FROM transaction_build UNION ALL SELECT
-'train',simday_number, province_id, null, count_army, null
+'train',day_id_to_num(simday_number), province_id, null, count_army, null
 FROM transaction_train UNION ALL SELECT
-'move',simday_number, province_from_id, province_to_id, army_units, null
+'move',day_id_to_num(simday_number), province_from_id, province_to_id, army_units, null
 FROM transaction_move;

@@ -145,8 +145,10 @@ public class GraphEditor extends PCanvas {
 
         //loadProvinces("province.txt");
         pullProvinces();
-        selected = (PPath) nodeLayer.getChild(0);
-        selected.setPaint(selectColor);
+        if(nodeLayer.getChildrenCount()>0) {
+            selected = (PPath) nodeLayer.getChild(0);
+            selected.setPaint(selectColor);
+        }
 
         // Create event handler to move nodes and update edges
         //nodeLayer.addInputEventListener(...);
@@ -201,6 +203,9 @@ public class GraphEditor extends PCanvas {
     }
 
     public void pullProvinces() {
+        if(!MainManager.inited) {
+            return;
+        }
         Query queryN = MainManager.getEM().createNativeQuery("SELECT id_province FROM province");/*, x, y, name_province, army_units, clan_control_id*/
 
         List<Object> listN = queryN.getResultList();
