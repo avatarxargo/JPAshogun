@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 import javafx.scene.control.SelectionMode;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JList;
@@ -44,6 +45,8 @@ public class BaseDialog extends JFrame {
         //init
         this.th = th;
         this.me = this;
+        ImageIcon iconset = new ImageIcon(this.getClass().getResource("/flag.png"));
+    	this.setIconImage(iconset.getImage());
         this.setTitle(th.getDisplayName());
         this.setSize(600, 400);
         this.setDefaultCloseOperation(HIDE_ON_CLOSE);

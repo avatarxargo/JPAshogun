@@ -17,7 +17,7 @@ public class JBuildingCombo extends JComboBox {
     private Object[] ids;
     
     public void loadProvinces() {
-        String transQ = "SELECT  id_building, name_building FROM building;";
+        String transQ = "SELECT id_building, name_building FROM building;";
         Query q = MainManager.getEM().createNativeQuery(transQ);
         List<Object[]> listN = q.getResultList();
         

@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import javax.persistence.Query;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -33,7 +34,7 @@ public class NewWizardModular extends JFrame {
     private boolean firstid;
 
     public NewWizardModular(String name, ArrayList<DBVariable> vars, String tableName, String[] columnNames, boolean firstid) {
-        this.setSize(400, 200);
+        this.setSize(400, 300);
         this.setDefaultCloseOperation(HIDE_ON_CLOSE);
         this.setLocation(200, 200);
         this.setTitle(name);
@@ -41,6 +42,8 @@ public class NewWizardModular extends JFrame {
         this.vars = vars;
         this.firstid = firstid;
         field = new ArrayList<VarField>();
+        ImageIcon iconset = new ImageIcon(this.getClass().getResource("/flagadd.png"));
+    	this.setIconImage(iconset.getImage());
 
         //content
         setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
@@ -210,6 +213,7 @@ public class NewWizardModular extends JFrame {
 
     private void addOk(BaseDialog bd) {
         JButton ok = new JButton("OK");
+        NewWizardModular me = this;
         ok.addActionListener(
                 new ActionListener() {
                     public void actionPerformed(ActionEvent arg0) {
@@ -225,6 +229,8 @@ public class NewWizardModular extends JFrame {
                         MainManager.getEM().getTransaction().commit();
                         bd.remodel();
                         MainManager.reeditor();
+                        bd.requestFocus();
+                        me.requestFocus();
                     }
                 }
         );

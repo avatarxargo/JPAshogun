@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import javax.persistence.Query;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -56,6 +57,8 @@ public class ProvinceInspector extends JFrame {
         this.setSize(400, 400);
         this.setTitle("Inspector: " + province.getNameProvince());
         this.setVisible(true);
+        ImageIcon iconset = new ImageIcon(this.getClass().getResource("/flag.png"));
+    	this.setIconImage(iconset.getImage());
         //
         this.setLayout(new GridLayout(3, 1));
         textarea = new JPanel();

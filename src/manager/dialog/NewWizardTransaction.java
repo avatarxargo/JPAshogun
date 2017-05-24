@@ -9,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 import javax.persistence.Query;
+import javax.swing.ImageIcon;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import manager.dialog.popups.JProvinceButton;
@@ -37,6 +38,8 @@ public class NewWizardTransaction extends javax.swing.JFrame {
         this.setLocation(100, 100);
         this.setTitle(prov.getNameProvince() + " " + this.getTitle());
         NewWizardTransaction me = this;
+        ImageIcon iconset = new ImageIcon(this.getClass().getResource("/flagadd.png"));
+    	this.setIconImage(iconset.getImage());
         buildcombo.loadProvinces();
         //
         submitbutton.addActionListener(
@@ -93,7 +96,7 @@ public class NewWizardTransaction extends javax.swing.JFrame {
         q.setParameter(1, prov.getClanControlId().getIdClan());
         q.setParameter(2, b.getCostResourceId().getIdResource());
         Object res = q.getResultList().get(0);
-        txt += "[" + b.getCostValue() + " " + b.getCostResourceId().getNameResource() + " per building ] " + (int) res + " -> " + ((int) res - (b.getCostValue() * (int) buildspin.getValue()));
+        txt += "["+ b.getCostValue() + " " + b.getCostResourceId().getNameResource() + " per building ] " + (int) res + " -> " + ((int) res - (b.getCostValue() * (int) buildspin.getValue()));
         buildstat.setText(txt);
     }
 

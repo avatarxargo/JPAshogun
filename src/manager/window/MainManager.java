@@ -12,6 +12,7 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import manager.dialog.BaseDialog;
@@ -178,6 +179,9 @@ public class MainManager {
         toolkit.add(new BaseDialogButton(baseDialog13));
         toolkit.add(new JNewDayButton());
         toolkit.setVisible(true);
+        
+        ImageIcon iconset = new ImageIcon(toolkit.getClass().getResource("/flag2.png"));
+    	toolkit.setIconImage(iconset.getImage());
     }
 
     public static EntityManager getEM() {
@@ -201,6 +205,9 @@ public class MainManager {
      * Connects to the database
      */
     public static void init() {
+        if(em!=null) {
+           getEM().close();
+        }
         try {
             EntityManagerFactory emf = Persistence.createEntityManagerFactory("JPAshogunPU");
             em = emf.createEntityManager();
