@@ -81,8 +81,6 @@ public class Province implements Serializable {
     private Collection<TransactionBuild> transactionBuildCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "provinceId")
     private Collection<OwnedBuildings> ownedBuildingsCollection;
-    @OneToMany(mappedBy = "provinceId")
-    private Collection<Simday> simdayCollection;
 
     public Province() {
     }
@@ -226,15 +224,6 @@ public class Province implements Serializable {
 
     public void setOwnedBuildingsCollection(Collection<OwnedBuildings> ownedBuildingsCollection) {
         this.ownedBuildingsCollection = ownedBuildingsCollection;
-    }
-
-    @XmlTransient
-    public Collection<Simday> getSimdayCollection() {
-        return simdayCollection;
-    }
-
-    public void setSimdayCollection(Collection<Simday> simdayCollection) {
-        this.simdayCollection = simdayCollection;
     }
 
     @Override

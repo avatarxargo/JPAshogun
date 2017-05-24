@@ -1,0 +1,123 @@
+CREATE OR REPLACE FUNCTION get_clan_res(cid int, resid int)
+RETURNS int
+AS
+$$
+select COALESCE((select amount_resources from owned_resource where
+resource_id = resid and
+clan_id = cid), 0);
+$$
+LANGUAGE SQL IMMUTABLE STRICT;
+
+CREATE OR REPLACE FUNCTION get_trb_prov(tid int)
+RETURNS int
+AS
+$$
+select province_id from transaction_build where id_transaction_build = tid;
+$$
+LANGUAGE SQL IMMUTABLE STRICT;
+
+CREATE OR REPLACE FUNCTION get_trb_building(tid int)
+RETURNS int
+AS
+$$
+select building_type_id from transaction_build where id_transaction_build = tid;
+$$
+LANGUAGE SQL IMMUTABLE STRICT;
+
+CREATE OR REPLACE FUNCTION get_trb_clan(tid int)
+RETURNS int
+AS
+$$
+select clan_control_id from province where id_province = get_trb_prov(tid);
+$$
+LANGUAGE SQL IMMUTABLE STRICT;
+
+
+CREATE FUNCTION get_owner(pid int)
+RETURNS int
+AS
+$$
+	select clan_control_id from province where
+	pid = id_province;
+$$
+LANGUAGE SQL IMMUTABLE STRICT;
+
+
+CREATE OR REPLACE FUNCTION add_resource(cid integer,rid integer, amount int)
+    RETURNS void
+    LANGUAGE 'sql'
+    VOLATILE  STRICT
+    PARALLEL UNSAFE
+    COST 100.0
+AS $function$update owned_resource
+set amount_resources = (amount+(select amount_resources from owned_resource
+where clan_id = cid and resource_id = rid))
+where clan_id = cid and resource_id = rid
+$function$;
+
+
+CREATE OR REPLACE FUNCTION pay_resource_helper(cid integer,rid integer, amount int)
+    RETURNS int
+    LANGUAGE 'sql'
+    VOLATILE  STRICT
+    PARALLEL UNSAFE
+    COST 100.0
+AS $function$
+update owned_resource set amount_resources = (-amount+(select amount_resources from owned_resource
+where clan_id = cid and resource_id = rid))
+where clan_id = cid and resource_id = rid and get_clan_res(cid,rid)>=amount
+RETURNING amount_resources;
+$function$;
+
+CREATE OR REPLACE FUNCTION pay_resource(cid integer,rid integer, amount int)
+    RETURNS boolean
+    LANGUAGE 'sql'
+    VOLATILE  STRICT
+    PARALLEL UNSAFE
+    COST 100.0
+AS $function$
+select (get_clan_res(cid,rid)=pay_resource_helper(cid,rid,amount)) IS NOT NULL;
+$function$;
+
+CREATE OR REPLACE FUNCTION evaluate_train(tid integer)
+    RETURNS void
+    LANGUAGE 'sql'
+    VOLATILE  STRICT
+    PARALLEL UNSAFE
+    COST 100.0
+AS $function$
+update province set
+army_units = army_units + (select count_army from transaction_train where id_transaction_train = tid)
+where
+id_province = (select province_id from transaction_train where id_transaction_train = tid) and
+pay_resource(get_owner((select province_id from transaction_train where id_transaction_train = tid)),
+             (select cost_one_army_unit_resource_id from province where id_province = (select province_id from transaction_train where id_transaction_train = tid)),
+            
+             (select count_army from transaction_train where id_transaction_train = tid)
+             *(select cost_one_army_unit_value from province where id_province = (select province_id from transaction_train where id_transaction_train = tid)))
+$function$;
+
+
+CREATE OR REPLACE FUNCTION evaluate_build(tid integer)
+    RETURNS void
+    LANGUAGE 'sql'
+    VOLATILE  STRICT
+    COST 100.0
+AS $function$
+WITH upsert AS ( UPDATE owned_buildings SET amount_buildings=amount_buildings+
+                (select count_buildings from transaction_build WHERE id_transaction_build = tid) WHERE
+                province_id = (select province_id from transaction_build WHERE id_transaction_build = tid) AND
+                building_id = get_trb_building(tid) AND
+pay_resource(get_trb_clan(tid),
+(select cost_resource_id from building where id_building = get_trb_building(tid)),
+(select cost_value from building where id_building = get_trb_building(tid)))
+                RETURNING * )
+			
+insert into owned_buildings (province_id, building_id, amount_buildings)
+select province_id, building_type_id, count_buildings from transaction_build WHERE
+id_transaction_build = tid AND
+pay_resource(get_owner((select province_id from transaction_build WHERE id_transaction_build = tid)),
+(select cost_resource_id from building where id_building = (select building_type_id from transaction_build WHERE id_transaction_build = tid)),
+(select cost_value from building where id_building = (select building_type_id from transaction_build WHERE id_transaction_build = tid)))
+AND NOT EXISTS (SELECT * FROM upsert)
+$function$;

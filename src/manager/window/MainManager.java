@@ -22,6 +22,8 @@ import manager.map.GraphEditorTester;
 import manager.persistence.Building;
 import manager.persistence.Clan;
 import manager.persistence.Neighbour;
+import manager.persistence.OwnedBuildings;
+import manager.persistence.OwnedResource;
 import manager.persistence.PlayerType;
 import manager.persistence.Province;
 import manager.persistence.Resource;
@@ -29,7 +31,6 @@ import manager.persistence.Simday;
 import manager.persistence.TransactionBuild;
 import manager.persistence.TransactionMove;
 import manager.persistence.TransactionTrain;
-import manager.persistence.Transactions;
 import manager.persistence.pulled.ProvinceLocal;
 import manager.persistence.pulled.ProvinceNeighborsLocal;
 
@@ -45,7 +46,7 @@ public class MainManager {
     private static GraphEditorTester map;
     
     public static ModularHandler mhprovince, mhnrighbor, mhplayertype,
-            mpresource, mhday, mhclan, mhplayer, mhbuilding, mhownbuilding,
+            mpresource, mhday, mhclan, mhplayer, mhbuilding, mhownbuilding, mhownres,
             mhtransactions, mhtranb, mhtrant, mhtranmov;
 
     public static void main(String[] args) {
@@ -87,8 +88,6 @@ public class MainManager {
         mhday = new ModularHandler("Simday","simday",true,Simday.class);
         mhday.addVariable("id", "id_simday", DBVarType.LONG);
         mhday.addVariable("day number", "day_number", DBVarType.LONG);
-        mhday.addVariable("clan", "clan_id", DBVarType.CLAN_FK);
-        mhday.addVariable("province", "province_id", DBVarType.PROVINCE_FK);
         BaseDialog baseDialog5 = new BaseDialog(mhday);
         
         mhclan = new ModularHandler("Clan","clan",true,Clan.class);
@@ -112,12 +111,19 @@ public class MainManager {
         mhbuilding.addVariable("resource", "cost_resource_id", DBVarType.RESOURCE_FK);
         BaseDialog baseDialog8 = new BaseDialog(mhbuilding);
         
-        mhownbuilding = new ModularHandler("Owned Building","owned_buildings",true,Building.class);
+        mhownbuilding = new ModularHandler("Owned Building","owned_buildings",true,OwnedBuildings.class);
         mhownbuilding.addVariable("id", "id_owned_buildings", DBVarType.LONG);
         mhownbuilding.addVariable("province", "province_id", DBVarType.PROVINCE_FK);
         mhownbuilding.addVariable("building", "building_id", DBVarType.BUILDING_FK);
         mhownbuilding.addVariable("count", "amount_buildings", DBVarType.LONG);
         BaseDialog baseDialog9 = new BaseDialog(mhownbuilding);
+        
+        mhownres = new ModularHandler("Owned Resource","owned_resource",true,OwnedResource.class);
+        mhownres.addVariable("id", "id_owned_resources", DBVarType.LONG);
+        mhownres.addVariable("resource", "resource_id", DBVarType.RESOURCE_FK);
+        mhownres.addVariable("clan", "clan_id", DBVarType.CLAN_FK);
+        mhownres.addVariable("amount", "amount_resources", DBVarType.LONG);
+        BaseDialog baseDialog10 = new BaseDialog(mhownres);
         /*
         mhtransactions = new ModularHandler("Transactions","transactions",true,Transactions.class);
         mhtransactions.addVariable("type", "type", DBVarType.VARCHAR);
@@ -160,7 +166,7 @@ public class MainManager {
         toolkit.add(new BaseDialogButton(baseDialog7));
         toolkit.add(new BaseDialogButton(baseDialog8));
         toolkit.add(new BaseDialogButton(baseDialog9));
-        //toolkit.add(new BaseDialogButton(baseDialog10));
+        toolkit.add(new BaseDialogButton(baseDialog10));
         toolkit.add(new BaseDialogButton(baseDialog11));
         toolkit.add(new BaseDialogButton(baseDialog12));
         toolkit.add(new BaseDialogButton(baseDialog13));

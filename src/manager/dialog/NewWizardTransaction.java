@@ -9,8 +9,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 import javax.persistence.Query;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import manager.dialog.popups.JProvinceButton;
 import manager.dialog.popups.ProvinceInspector;
+import manager.persistence.Building;
 import manager.persistence.Province;
 import manager.persistence.TransactionBuild;
 import manager.window.MainManager;
@@ -23,7 +26,7 @@ public class NewWizardTransaction extends javax.swing.JFrame {
 
     Province prov;
     ProvinceInspector pi;
-    
+
     /**
      * Creates new form NewWizardTransaction
      */
@@ -32,14 +35,14 @@ public class NewWizardTransaction extends javax.swing.JFrame {
         this.prov = prov;
         this.pi = pi;
         this.setLocation(100, 100);
-        this.setTitle(prov.getNameProvince()+" "+this.getTitle());
+        this.setTitle(prov.getNameProvince() + " " + this.getTitle());
         NewWizardTransaction me = this;
         buildcombo.loadProvinces();
         //
         submitbutton.addActionListener(
                 new ActionListener() {
                     public void actionPerformed(ActionEvent arg0) {
-                        switch(tabs.getSelectedIndex()) {
+                        switch (tabs.getSelectedIndex()) {
                             case 0:
                                 insertBuild();
                                 break;
@@ -54,45 +57,98 @@ public class NewWizardTransaction extends javax.swing.JFrame {
                     }
                 }
         );
-        //
+        // build info
+        buildcombo.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                refreshBuild();
+            }
+        });
+        buildspin.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                refreshBuild();
+            }
+        });
+        // train info
+        trainspin.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                refreshTrain();
+            }
+        });
+        movspin.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                refreshMove();
+            }
+        });
+        refreshBuild();
+        refreshTrain();
+        refreshMove();
         this.setVisible(true);
     }
-    
+
+    private void refreshBuild() {
+        String txt = "Resource Balance: ";
+        Building b = MainManager.getEM().find(Building.class, buildcombo.getId(buildcombo.getSelectedIndex()));
+        String transQ = "SELECT get_clan_res(?,?)";
+        Query q = MainManager.getEM().createNativeQuery(transQ);
+        q.setParameter(1, prov.getClanControlId().getIdClan());
+        q.setParameter(2, b.getCostResourceId().getIdResource());
+        Object res = q.getResultList().get(0);
+        txt += "[" + b.getCostValue() + " " + b.getCostResourceId().getNameResource() + " per building ] " + (int) res + " -> " + ((int) res - (b.getCostValue() * (int) buildspin.getValue()));
+        buildstat.setText(txt);
+    }
+
+    private void refreshMove() {
+        String txt = "Garrison Status: ";
+        txt += prov.getArmyUnits() + " -> " + (prov.getArmyUnits() - (int) movspin.getValue());
+        movstat.setText(txt);
+    }
+
+    private void refreshTrain() {
+        String txt = "Resource Balance: ";
+        String transQ = "SELECT get_clan_res(?1,?2), name_resource FROM resource WHERE id_resource = ?2";
+        Query q = MainManager.getEM().createNativeQuery(transQ);
+        q.setParameter(1, prov.getClanControlId().getIdClan());
+        q.setParameter(2, prov.getCostOneArmyUnitResourceId());
+        List<Object[]> res = q.getResultList();
+        txt += "[" + prov.getCostOneArmyUnitValue() + " " + res.get(0)[1] + " per unit ] " + res.get(0)[0] + " -> " + ((int) res.get(0)[0] - prov.getCostOneArmyUnitValue() * (int) trainspin.getValue());
+        trainstat.setText(txt);
+    }
+
     private void insertBuild() {
-        dbstatus.setText("building "+buildcombo.getSelectedItem().toString()+" tiems "+buildspin.getValue());
+        dbstatus.setText("building " + buildcombo.getSelectedItem().toString() + " tiems " + buildspin.getValue());
         String transQ = "INSERT INTO transaction_build (simday_number,province_id,building_type_id,count_buildings) VALUES (?,?,?,?);";
         Query q = MainManager.getEM().createNativeQuery(transQ);
-        q.setParameter(1,1);
-        q.setParameter(2,prov.getIdProvince());
-        q.setParameter(3,buildcombo.getId(buildcombo.getSelectedIndex()));
-        q.setParameter(4,buildspin.getValue());
+        q.setParameter(1, 1);
+        q.setParameter(2, prov.getIdProvince());
+        q.setParameter(3, buildcombo.getId(buildcombo.getSelectedIndex()));
+        q.setParameter(4, buildspin.getValue());
         MainManager.getEM().getTransaction().begin();
         q.executeUpdate();
         MainManager.getEM().getTransaction().commit();
         pi.refresh();
     }
-    
+
     private void insertTrain() {
-        dbstatus.setText("training "+trainspin.getValue()+" troops");
+        dbstatus.setText("training " + trainspin.getValue() + " troops");
         String transQ = "INSERT INTO transaction_train (simday_number,province_id,count_army) VALUES (?,?,?);";
         Query q = MainManager.getEM().createNativeQuery(transQ);
-        q.setParameter(1,1);
-        q.setParameter(2,prov.getIdProvince());
-        q.setParameter(3,trainspin.getValue());
+        q.setParameter(1, 1);
+        q.setParameter(2, prov.getIdProvince());
+        q.setParameter(3, trainspin.getValue());
         MainManager.getEM().getTransaction().begin();
         q.executeUpdate();
         MainManager.getEM().getTransaction().commit();
         pi.refresh();
     }
-    
+
     private void insertMove() {
-        dbstatus.setText("moving "+movspin.getValue()+" troops to "+movprov.getText()+".");
+        dbstatus.setText("moving " + movspin.getValue() + " troops to " + movprov.getText() + ".");
         String transQ = "INSERT INTO transaction_move (simday_number,province_from_id,province_to_id,army_units) VALUES (?,?,?,?);";
         Query q = MainManager.getEM().createNativeQuery(transQ);
-        q.setParameter(1,1);
-        q.setParameter(2,prov.getIdProvince());
-        q.setParameter(3,movprov.getFK());
-        q.setParameter(4,movspin.getValue());
+        q.setParameter(1, 1);
+        q.setParameter(2, prov.getIdProvince());
+        q.setParameter(3, movprov.getFK());
+        q.setParameter(4, movspin.getValue());
         MainManager.getEM().getTransaction().begin();
         q.executeUpdate();
         MainManager.getEM().getTransaction().commit();

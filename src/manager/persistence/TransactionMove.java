@@ -18,8 +18,6 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
-import manager.persistence.Province;
-import manager.persistence.Simday;
 
 /**
  *
@@ -120,7 +118,7 @@ public class TransactionMove implements Serializable {
 
     @Override
     public String toString() {
-        return "manager.dialog.TransactionMove[ idTransactionMove=" + idTransactionMove + " ]";
+        return "manager.persistence.TransactionMove[ idTransactionMove=" + idTransactionMove + " ]";
     }
     
 }

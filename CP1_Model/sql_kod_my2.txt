@@ -118,18 +118,8 @@ CREATE TABLE neighbour (
 CREATE TABLE simday (
 	id_simday serial NOT NULL,
 	day_number integer NOT NULL,
-	clan_id integer NOT NULL,
-	province_id integer DEFAULT NULL,
 	PRIMARY KEY (id_simday),
-    CONSTRAINT unique_day_clan_province UNIQUE (day_number, clan_id, province_id),
-    CONSTRAINT "clan_id_FK" FOREIGN KEY (clan_id)
-        REFERENCES clan (id_clan) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION,
-    CONSTRAINT "province_id_FK" FOREIGN KEY (province_id)
-        REFERENCES province (id_province) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
+    CONSTRAINT unique_day_clan_province UNIQUE (day_number)
 );
 
 CREATE TABLE transaction_move (

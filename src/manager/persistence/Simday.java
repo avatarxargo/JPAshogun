@@ -14,8 +14,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -50,12 +48,6 @@ public class Simday implements Serializable {
     private Collection<TransactionTrain> transactionTrainCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "simdayNumber")
     private Collection<TransactionBuild> transactionBuildCollection;
-    @JoinColumn(name = "clan_id", referencedColumnName = "id_clan")
-    @ManyToOne(optional = false)
-    private Clan clanId;
-    @JoinColumn(name = "province_id", referencedColumnName = "id_province")
-    @ManyToOne
-    private Province provinceId;
 
     public Simday() {
     }
@@ -110,22 +102,6 @@ public class Simday implements Serializable {
 
     public void setTransactionBuildCollection(Collection<TransactionBuild> transactionBuildCollection) {
         this.transactionBuildCollection = transactionBuildCollection;
-    }
-
-    public Clan getClanId() {
-        return clanId;
-    }
-
-    public void setClanId(Clan clanId) {
-        this.clanId = clanId;
-    }
-
-    public Province getProvinceId() {
-        return provinceId;
-    }
-
-    public void setProvinceId(Province provinceId) {
-        this.provinceId = provinceId;
     }
 
     @Override

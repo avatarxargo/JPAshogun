@@ -95,7 +95,7 @@ public class BaseDialog extends JFrame {
 		);
         contentR.add(b_refresh);
         //
-        contentR.add(b_edit);
+        //contentR.add(b_edit);
         b_rem = new JButton("Remove");
         b_rem.addActionListener(
 				new ActionListener()
